@@ -1,4 +1,4 @@
-![image-20210524192657052](https://typora-pic-yj.oss-cn-shanghai.aliyuncs.com/img/image-20210524192657052.png)
+![image-20210524192657052](pic/image-20210524192657052.png)
 
 # MixLive-vue
 
