@@ -52,6 +52,8 @@ BILIBILI直播弹幕协议参考	[lovelyyoshino/Bilibili-Live-API](https://githu
 
 ## 待增加功能
 
+- [ ] 网站升级Https协议
+
 - [ ] 虎牙、网易cc 弹幕获取
 
 - [ ] 弹幕发送
