@@ -1,4 +1,4 @@
-![image-20210524192657052](pic/image-20210524192657052.png)
+![image-20210524192657052](https://github.com/guyijie1211/MixLive-vue/blob/master/pic/image-20210524192657052.png)
 
 # MixLive-vue
 
