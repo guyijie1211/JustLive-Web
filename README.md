@@ -6,7 +6,7 @@
 
 后端项目地址    [MixLive](https://github.com/guyijie1211/MixLive)
 
-网站页面   &#x1F449; [live.yj1211.work](live.yj1211.work) &#x1F448;
+网站页面   &#x1F449; [live.yj1211.work](http://live.yj1211.work) &#x1F448;
 
 #### 功能
 
@@ -53,6 +53,9 @@ BILIBILI直播弹幕协议参考	[lovelyyoshino/Bilibili-Live-API](https://githu
 ## 待增加功能
 
 - [ ] 虎牙、网易cc 弹幕获取
+
 - [ ] 弹幕发送
+
 - [ ] 更多平台支持
+
 - [ ] 稳定性优化
