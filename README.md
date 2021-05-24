@@ -38,15 +38,15 @@ BILIBILI直播弹幕协议参考	[lovelyyoshino/Bilibili-Live-API](https://githu
 
 ## 页面
 
-![image-20210524193646108](pic/image-20210524193646108.png)
+![image-20210524193646108](https://github.com/guyijie1211/MixLive-vue/blob/master/pic/image-20210524193646108.png)
 
-![image-20210524194748667](pic/image-20210524194748667.png)
+![image-20210524194748667](https://github.com/guyijie1211/MixLive-vue/blob/master/pic/image-20210524194748667.png)
 
-![image-20210524193933924](pic/image-20210524193933924.png)
+![image-20210524193933924](https://github.com/guyijie1211/MixLive-vue/blob/master/pic/image-20210524193933924.png)
 
-![image-20210524194048907](pic/image-20210524194048907.png)
+![image-20210524194048907](https://github.com/guyijie1211/MixLive-vue/blob/master/pic/image-20210524194048907.png)
 
-![image-20210524194340048](pic/image-20210524194340048.png)
+![image-20210524194340048](https://github.com/guyijie1211/MixLive-vue/blob/master/pic/image-20210524194340048.png)
 
 
 
