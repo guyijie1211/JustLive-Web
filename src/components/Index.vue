@@ -1,0 +1,376 @@
+<template>
+  <el-container style="height: 100%; width: 100%">
+    <el-header class="home-header" style="height: 50px">
+      <div class="home-head-search-bar">
+        <div class="logo" @click="toMain()">Live</div>
+        <div v-if="showSearch">
+          <el-input
+              class="head-search"
+              placeholder="搜索主播"
+              v-model="searchInput">
+          </el-input>
+          <el-button class="search-btn" icon="el-icon-search" circle @click="submitKw()" size="small"></el-button>
+        </div>
+        <div class="user-info">
+          <div v-if="isLogin == 'true'" class="user-info-in">
+            <el-dropdown @command="handleCommand">
+              <div class="el-dropdown-link">
+                {{ userInfo.nickName }}<i class="el-icon-arrow-down el-icon--right"></i>
+              </div>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="changeInfo">信息修改</el-dropdown-item>
+                <el-dropdown-item command="changePassword">修改密码</el-dropdown-item>
+                <el-dropdown-item command="logOut" divided>注销</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
+          <div v-else class="to-login" @click="clickLogin">
+            登录
+          </div>
+        </div>
+      </div>
+    </el-header>
+    <keep-alive include="Home">
+      <router-view @exitSearch="exitSearch" @inSearch="inSearch" @loginSuccess="loginSuccess" :isLogin="isLogin" :userInfo="userInfo"></router-view>
+    </keep-alive>
+    <el-dialog
+        title="登录"
+        :visible.sync="dialogVisibleIndex"
+        width="450px"
+        height="200px"
+        :destroy-on-close="true"
+        @close="handleLogin('cancel', null)">
+      <Login @loginResult="handleLogin"></Login>
+    </el-dialog>
+    <el-dialog title="修改信息"
+               width="400px"
+               :visible.sync="dialogFormVisible"
+               :destroy-on-close="true"
+               @closed="closeForm()">
+      <el-form :model="form" label-width="80px"  size="small">
+        <el-form-item label="用户名">
+          <el-input :disabled="true" v-model="userInfo.userName" readonly></el-input>
+        </el-form-item>
+        <el-form-item label="昵称" >
+          <el-input v-model="form.nickName" style="width: 100px"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="small" @click="dialogFormVisible = false">取 消</el-button>
+        <el-button size="small" type="primary" @click="submit()">确 定</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog title="修改密码"
+               width="440px"
+               :visible.sync="dialogPasswordVisible"
+               :destroy-on-close="true">
+      <el-form ref="userPasswordForm" :model="formPassword" :rules="formPasswordRules" label-width="90px"  size="small">
+        <el-form-item label="用户名" prop="name">
+          <el-input :disabled="true" v-model="userInfo.userName" readonly></el-input>
+        </el-form-item>
+        <el-form-item label="旧密码" prop="oldPassword">
+          <el-input v-model="formPassword.oldPassword" style="width: 100px"></el-input>
+        </el-form-item>
+        <el-form-item label="新密码" prop="newPassword">
+          <el-input v-model="formPassword.newPassword" style="width: 100px"></el-input>
+        </el-form-item>
+        <el-form-item label="确认新密码" prop="checkNewPassword">
+          <el-input v-model="formPassword.checkNewPassword" style="width: 100px"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="small" @click="dialogPasswordVisible = false">取 消</el-button>
+        <el-button size="small" type="primary" @click="submitPassword()">确 定</el-button>
+      </div>
+    </el-dialog>
+  </el-container>
+</template>
+
+<script>
+import md5 from 'js-md5';
+import Login from "@/components/Login/Login";
+import {changePassword, changeUserInfo} from "@/api/UserApi";
+
+export default {
+  name: 'Index',
+  components: {
+    Login
+  },
+  data() {
+    var validatePass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入密码'))
+      } else {
+        if (this.formPassword.checkPassword !== '') {
+          this.$refs.userPasswordForm.validateField('checkPassword')
+        }
+        callback()
+      }
+    }
+    var validatePass2 = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请再次输入密码'))
+      } else if (value !== this.formPassword.newPassword) {
+        callback(new Error('两次输入密码不一致!'))
+      } else {
+        callback()
+      }
+    }
+    return {
+      player: null,
+      isActive: false,
+      searchInput: '',
+      showSearch: true,
+      isLogin: 'false',
+      userInfo:{},
+      dialogVisibleIndex: false,
+      dialogFormVisible: false,
+      dialogPasswordVisible: false,
+      form:{},
+      formPassword:{},
+      loading: false,
+      formPasswordRules: {
+        oldPassword: [
+          { required: true, message: '请输入旧密码', trigger: 'blur' },
+          { min: 3, max: 32, message: '长度在 3 到 16 个字符', trigger: 'blur' }
+        ],
+        newPassword: [
+          { required: true, message: '请输入新密码', trigger: 'blur' },
+          { validator: validatePass, trigger: 'blur' }
+        ],
+        checkNewPassword: [
+          { validator: validatePass2, trigger: 'blur' }
+        ],
+      },
+    }
+  },
+  methods: {
+    toMain(){
+      this.$router.push('/index/home/recommend')
+    },
+    submitKw(){
+      if(this.searchInput.trim()!=''){
+        let searchInput = this.searchInput
+        this.showSearch = false
+        this.searchInput = ''
+        this.$router.push({ name: 'search', query:{ keyWord : searchInput } })
+      }
+    },
+    logOutConfirm() {
+      this.$confirm('是否要退出登录?', '注销', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        sessionStorage.removeItem("isLogin");
+        sessionStorage.removeItem("userInfo");
+        this.isLogin = 'false'
+        this.userInfo = {}
+        if (window.document.location.pathname == '/index/home/follows'){
+          this.$router.push('/index/home/recommend')
+        }
+        this.$message({
+          type: 'warning',
+          message: '已退出',
+          center: true,
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消退出',
+          center: true,
+        });
+      });
+    },
+    clickLogin(){
+      this.dialogVisibleIndex = true
+    },
+    closeForm(){
+      this.dialogFormVisible = false
+      this.form.nickName = this.userInfo.nickName
+    },
+    loginSuccess(userInfo){
+      let _this = this
+      this.userInfo = userInfo
+      this.isLogin = 'true'
+      console.log("save data")
+      sessionStorage.setItem('userInfo', JSON.stringify(this.userInfo))
+      sessionStorage.setItem('isLogin', this.isLogin)
+      _this.$emit("loginSuccess",userInfo)
+    },
+    handleLogin(result, userInfo){
+      if(result == "success"){
+        this.loginSuccess(userInfo)
+        this.dialogVisibleIndex = false
+      }
+      if(result == "cancel"){
+        this.dialogVisibleIndex = false
+      }
+    },
+    submit(){
+      if(this.form.nickName.trim() == ''){
+        this.$message({
+          message: '群聊名不能为空字符',
+          type: 'warning'
+        });
+        this.form.nickName = this.userInfo.nickName
+      }else if(this.form.nickName.trim() == this.userInfo.nickName){
+        this.$message({
+          message: '换个新的吧',
+          type: 'warning'
+        });
+        this.form.nickName = this.userInfo.nickName
+      }else{
+        let userInfo = {
+          userName: this.userInfo.userName,
+          nickName: this.form.nickName,
+        }
+        changeUserInfo(userInfo)
+            .then(response => {
+              let data = response.data
+              if(data.code == 200){
+                this.userInfo = data.data
+                sessionStorage.setItem('userInfo', JSON.stringify(this.userInfo))
+                this.$notify({
+                  title: '成功',
+                  message: "信息修改成功",
+                  duration: 2000,
+                  type: 'success',
+                  offset: 50,
+                });
+              }
+              this.dialogFormVisible = false
+            })
+      }
+    },
+    exitSearch(){
+      this.showSearch = true
+    },
+    inSearch(){
+      this.showSearch = false
+    },
+    submitPassword(){
+      this.$refs['userPasswordForm'].validate((valid) => {
+        if (valid) {
+          console.log(this.userInfo.userName)
+          changePassword(this.userInfo.userName, md5(this.formPassword.oldPassword), md5(this.formPassword.newPassword))
+              .then(response => {
+                let data = response.data
+                if(data.code == 200){
+                  this.$notify({
+                    title: '密码修改成功，请重新登录',
+                    duration: 2000,
+                    type: 'success',
+                    offset: 50,
+                  });
+                  this.dialogPasswordVisible = false
+                  sessionStorage.removeItem("isLogin");
+                  sessionStorage.removeItem("userInfo");
+                  this.isLogin = 'false'
+                  this.userInfo = {}
+                  this.$router.push('/index/home/recommend')
+                }
+                if(data.code == 400){
+                  this.$notify({
+                    title: '旧密码错误',
+                    duration: 2000,
+                    type: 'warning',
+                    offset: 50,
+                  });
+                }
+              })
+        }
+        else {
+          return false
+        }
+      })
+
+    },
+    handleCommand(command) {
+      if(command == 'logOut'){
+        this.logOutConfirm()
+      }
+      if(command == 'changeInfo'){
+        this.dialogFormVisible = true
+      }
+      if(command == 'changePassword'){
+        this.dialogPasswordVisible = true
+      }
+    },
+  },
+  created() {
+    if (sessionStorage.getItem('userInfo')) {
+      this.userInfo = JSON.parse(sessionStorage.getItem('userInfo'))
+    }
+    if (sessionStorage.getItem('isLogin')) {
+      this.isLogin = sessionStorage.getItem('isLogin')
+    }
+  },
+  mounted() {
+
+  }
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+.home-header{
+  width: 100%;
+  box-shadow: 0px 5px 5px -5px #4e4c4c;
+}
+.head-search{
+  width: 250px;
+  margin-left: 40%;
+  margin-top: 9px;
+}
+.home-head-search-bar{
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.el-input /deep/.el-input__inner{
+  height: 30px;
+  width: 300px;
+  border-radius:20px;
+}
+.logo{
+  position: absolute;
+  cursor: pointer;
+  top: 5px;
+  left: 10px;
+  font-weight: bold;
+  font-size: 30px;
+}
+.user-info{
+  position: absolute;
+  top: 12px;
+  right: 20px;
+}
+.to-login{
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 600;
+  transition: all 0.1s;
+}
+.to-login:hover{
+  transform: scale(1.2);
+}
+.el-dropdown-link{
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.el-dropdown-link:hover{
+  transform: scale(1.2);
+}
+.input-style{
+  width: 200px;
+}
+.el-input /deep/ .el-input__inner{
+  width: 250px;
+}
+.search-btn{
+  margin-left: 10px;
+}
+</style>
