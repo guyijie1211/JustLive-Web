@@ -32,7 +32,7 @@ module.exports = {
         hotOnly: false  ,
         proxy: {
             '/api': {
-                target: 'http://121.199.4.228:8013/', //API服务器的地址(由于此处我nodejs后台用了路由，所以+了api)，正常不加
+                target: 'http://localhost:8013/', //API服务器的地址(由于此处我nodejs后台用了路由，所以+了api)，正常不加
                 ws: true,  //代理websockets
                 changeOrigin: true, // 虚拟的站点需要更管origin
                 pathRewrite: {   //重写路径 比如'/api/aaa/ccc'重写为'/aaa/ccc'
