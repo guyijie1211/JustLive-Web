@@ -129,7 +129,9 @@ export default {
                this.initBilibiliWs(art)
              }else if (this.platform == 'douyu') {
                this.initDouyuWs(art)
-             } else {
+             } else if (this.platform == 'huya') {
+               this.initHuyaWs(art)
+             }else {
                _this.$emit("notSupport")
              }
            })
@@ -221,7 +223,45 @@ export default {
         }
       };
     },
+    initHuyaWs(art){
+      const ws = new WebSocket('wss://cdnws.api.huya.com/');
+      let roomId = this.roomId
+      let _this = this
+      this.ws = ws
+      ws.onopen = function () {
+        let inRoomMsg = Global._bind_ws_info(_this.huyaAyyuid);
+        let loginMsg = Global.huyaSendPingReq();
+        ws.send(inRoomMsg);
+        ws.send(loginMsg);
+      };
+      this.interval = setInterval(function () {
+        let heartBeatMsg = Global.huyaSendPingReq()
+        ws.send(heartBeatMsg);
+      }, 30 * 1000);
 
+      ws.onmessage = async function (msg) {
+        var reader = new FileReader();
+        reader.readAsArrayBuffer(msg.data)
+        reader.onload = function () {
+          let msg_obj = Global._on_mes(this.result)
+          if (msg_obj.type == "chat") {
+            var someDanmakuAObj = {
+              text: msg_obj.content, // Danmu text
+              color: '#fff', // Danmu color
+              size: 10, // Danmu size
+              border: false, // Danmu border
+              mode: 0, // Danmu mode: 0-scroll or 1-static
+            };
+            art.plugins.artplayerPluginDanmuku.emit(someDanmakuAObj);
+            var newDanmu = {
+              fromName: msg_obj.name,
+              msg: msg_obj.content
+            }
+            _this.$emit("newDanmuSend", newDanmu)
+          }
+        }
+      }
+    },
   },
   mounted() {
 
