@@ -36,7 +36,7 @@
 
 BILIBILI直播弹幕协议参考	[lovelyyoshino/Bilibili-Live-API](https://github.com/lovelyyoshino/Bilibili-Live-API)
 
-## 待增加功能
+## 更新路线
 
 - [X] 网站升级Https协议
 
