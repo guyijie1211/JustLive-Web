@@ -36,6 +36,24 @@
 
 BILIBILI直播弹幕协议参考	[lovelyyoshino/Bilibili-Live-API](https://github.com/lovelyyoshino/Bilibili-Live-API)
 
+## 待增加功能
+
+- [X] 网站升级Https协议
+
+- [X] 虎牙弹幕获取
+
+- [X] 弹幕屏蔽
+
+- [ ] 历史记录
+
+- [ ] 网易cc 弹幕获取
+
+- [ ] 弹幕发送
+
+- [ ] 更多平台支持
+
+- [ ] 稳定性优化
+
 ## 页面
 
 ![image-20210524193646108](https://github.com/guyijie1211/MixLive-vue/blob/master/pic/image-20210524193646108.png)
@@ -47,19 +65,3 @@ BILIBILI直播弹幕协议参考	[lovelyyoshino/Bilibili-Live-API](https://githu
 ![image-20210524194048907](https://github.com/guyijie1211/MixLive-vue/blob/master/pic/image-20210524194048907.png)
 
 ![image-20210524194340048](https://github.com/guyijie1211/MixLive-vue/blob/master/pic/image-20210524194340048.png)
-
-
-
-## 待增加功能
-
-- [ ] 网站升级Https协议
-
-- [X] 虎牙弹幕获取
-
-- [ ] 网易cc 弹幕获取
-
-- [ ] 弹幕发送
-
-- [ ] 更多平台支持
-
-- [ ] 稳定性优化
