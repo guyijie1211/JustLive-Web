@@ -68,7 +68,8 @@ export default {
                     uid: response.data.data.uid,
                     userName: response.data.data.userName,
                     nickName: response.data.data.nickName,
-                    firstLetter: response.data.data.firstLetter
+                    firstLetter: response.data.data.firstLetter,
+                    banInfos: response.data.data.banInfos
                   }
                   this.loginForm.username = ''
                   this.loginForm.password = ''

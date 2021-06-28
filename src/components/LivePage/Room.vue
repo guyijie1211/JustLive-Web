@@ -10,7 +10,10 @@
     </el-dialog>
     <div class="room-left">
       <div v-if="isLive()" class="room-left-video">
-        <ArtPlayerTest v-if="isLive()" class="room-left-video-play" @notSupport="notSupport" @newDanmuSend="newDanmuSend" :platform="platform" :room-id="roomId" :is-live="isLive"></ArtPlayerTest>
+        <ArtPlayerTest v-if="isLive()" class="room-left-video-play" @notSupport="notSupport"
+                       @newDanmuSend="newDanmuSend" :platform="platform" :room-id="roomId"
+                       :is-live="isLive" :ban-active="banActive" :ban-level="banLevel"
+                       :ban-content-list="banContentList" :checked-content-list="checkedContentList"/>
       </div>
       <div v-else class="room-left-video-notLive">直播间未开播</div>
       <div class="room-left-info">
@@ -30,6 +33,54 @@
             <el-tooltip class="item" effect="dark" content="跳转到直播间" placement="top">
               <a :href="getUrl()" target="_blank"><i class="el-icon-link"></i></a>
             </el-tooltip>
+          </div>
+          <div v-if="platform != 'cc'" class="room-left-info-right-ban">
+            <el-popover
+                placement="bottom"
+                width="230"
+                trigger="manual"
+                v-model="popoverVisible"
+                @hide="banCancel()">
+              <el-form v-loading="loading" label-position="left" :model="form" size="mini">
+                <div v-if="isLogin != 'true'" class="room-left-info-right-ban-login-div" >
+                  <div class="room-left-info-right-ban-login" @click="dialogVisible = true">登录保存屏蔽信息</div>
+                </div>
+                <el-form-item label="屏蔽开关">
+                  <el-switch v-model="banActiveTemp"></el-switch>
+                </el-form-item>
+                <el-form-item :label="getPlatform(platform) + levelBanTxt">
+                  <el-input-number class="user-level" :disabled="platform=='huya'?true:false" v-model="banLevelTemp" :min="1" :max="99" controls-position="right" label="描述文字"></el-input-number>
+                  <div v-if="platform=='huya'" style="font-weight: lighter">(虎牙暂不支持)</div>
+                </el-form-item>
+                <div class="global-ban">
+                  <span>关键词屏蔽</span><span style="font-weight: lighter;font-size: 15px">(支持正则)</span>
+                </div>
+                <div class="ban-content-div">
+                  <el-input id="contentInput" v-model="newContent" placeholder="请输入屏蔽内容" size="small"></el-input>
+                  <el-button v-if="!hasNewContent(newContent)" disabled class="ban-content-btn" type="primary" size="small">添加</el-button>
+                  <el-button v-if="hasNewContent(newContent)" @click="addBan(newContent)" class="ban-content-btn" type="primary" size="small">添加</el-button>
+                </div>
+                <div style="margin-bottom: 10px">屏蔽列表(勾选生效)</div>
+                <div class="ban-content-list">
+                  <el-checkbox-group v-model="checkedContentListTemp">
+                    <el-row :gutter="20">
+                      <el-col style="position: relative;margin-bottom: 10px;overflow-x: hidden" :span="12" v-for="(content, index) in banContentListComputed" :key="index">
+                        <div @mouseover="overCheck($event)" @mouseout="outCheck($event)">
+                          <el-checkbox style="overflow: hidden;" :label="content"></el-checkbox>
+                          <i class="el-icon-error ban-content-list-icon" @click="deleteContent($event)"></i>
+                        </div>
+
+                      </el-col>
+                    </el-row>
+                  </el-checkbox-group>
+                </div>
+                <div style="text-align: center">
+                  <el-button size="small" @click="banCancel()">取消</el-button>
+                  <el-button type="primary" size="small" @click="activeBan()">确定</el-button>
+                </div>
+              </el-form>
+              <div slot="reference" @click="popoverVisible = !popoverVisible"><i class="el-icon-remove-outline"></i></div>
+            </el-popover>
           </div>
           <div class="room-left-info-right-follow">
             <el-button @click="followRoom()" :type="followed ? 'info' : 'primary'" size="mini">
@@ -64,9 +115,9 @@
 
 <script>
 import {getRoomInfo} from "@/api/liveList";
-import ArtPlayerTest from "@/components/Test/ArtPlayerTest";
-import {follow, unFollow} from "@/api/UserApi";
+import {changeUserInfo, follow, unFollow} from "@/api/UserApi";
 import Login from "@/components/Login/Login";
+import ArtPlayerTest from "@/components/Test/ArtPlayerTest";
 
 export default {
   name: "Room",
@@ -74,6 +125,7 @@ export default {
   props: ['userInfo', 'isLogin'],
   data() {
     return {
+      levelBanTxt: "等级屏蔽",
       platform: null,
       roomId: null,
       followed: false,
@@ -83,6 +135,20 @@ export default {
       danmuSupport: true,
       isBottom: true, //弹幕列表是否在底部（判断是否在浏览历史记录）
       dialogVisible: false,
+      popoverVisible: false,
+      loading: false,
+      banActive: false,
+      banLevel: 0,
+      banContentList: [],
+      checkedContentList: [],
+      banActiveTemp: false,
+      banLevelTemp: 0,
+      banContentListTemp: [],
+      checkedContentListTemp: [],
+      newContent:"",
+      form: {
+        content: "",
+      }
     }
   },
   methods: {
@@ -98,6 +164,170 @@ export default {
             this.followed = flag
           }
         })
+      if (this.isLogin == "true"){
+        this.initBan()
+      }
+    },
+    initBan(){
+      let banList = this.userInfo.banInfos
+      for(let i=0;i<banList.length;i++) {
+        let ban = banList[i];
+        if (ban.type == "2") { //0:屏蔽开关,1:屏蔽等级,2:所有屏蔽词,3:生效屏蔽词
+          let banContentList = ban.content.trim().split(";");
+          this.banContentList = banContentList;
+        } else if (ban.type == "3"){
+          let checkedContentList = ban.content.trim().split(";");
+          this.checkedContentList = checkedContentList;
+        } else if (ban.type == "1" && ban.platform == this.platform) {
+          this.banLevel = Number(ban.content);
+        } else if (ban.type == "0" && ban.content == "true") { //0:是否开启弹幕
+          this.banActive = true;
+        }
+      }
+      this.banActiveTemp = this.banActive;
+      this.banLevelTemp = this.banLevel;
+      this.banContentListTemp = this.banContentList;
+      this.checkedContentListTemp = this.checkedContentList;
+    },
+    banCancel(){
+      this.popoverVisible = false
+      this.banActiveTemp = this.banActive;
+      this.banLevelTemp = this.banLevel;
+      this.banContentListTemp = this.banContentList;
+      this.checkedContentListTemp = this.checkedContentList;
+    },
+    activeBan(){
+      if (this.isLogin == 'true') {
+        this.loading = true;
+      }
+      this.banActive = this.banActiveTemp;
+      this.banLevel = this.banLevelTemp;
+      this.banContentList = this.banContentListTemp;
+      this.checkedContentList = this.checkedContentListTemp;
+      let banList = [];
+      let banContent = '';
+      for(let i=0;i<this.banContentList.length;i++) {
+        let ban = this.banContentList[i];
+        if (banContent != ''){
+          banContent = banContent + ";" + ban;
+        }else {
+          banContent = ban;
+        }
+      }
+      let banObj = {
+        type: "2",
+        content: banContent,
+        platform: "null"
+      }
+      banList.push(banObj);
+      let checkedContent = '';
+      for(let i=0;i<this.checkedContentList.length;i++) {
+        let ban = this.checkedContentList[i];
+        if (checkedContent != ''){
+          checkedContent = checkedContent + ";" + ban;
+        }else {
+          checkedContent = ban;
+        }
+      }
+      let checkedObj = {
+        type: "3",
+        content: checkedContent,
+        platform: "null"
+      }
+      banList.push(checkedObj);
+      let activeBanObj = {
+        type: "0",
+        content: this.banActive.toString(),
+        platform: "null"
+      }
+      banList.push(activeBanObj);
+      let levelObj = {
+        type: "1",
+        content: this.banLevel,
+        platform: this.platform,
+      }
+      banList.push(levelObj);
+      this.userInfo.banInfos = banList
+      if (this.isLogin == 'true') {
+        changeUserInfo(this.userInfo)
+            .then(response => {
+              this.loading = false;
+              this.popoverVisible = false
+              let data = response.data
+              if(data.code == 200){
+                sessionStorage.setItem('userInfo', JSON.stringify(this.userInfo))
+                this.$notify({
+                  title: '成功',
+                  message: "屏蔽修改生效",
+                  duration: 2000,
+                  type: 'success',
+                  offset: 50,
+                });
+              }
+            })
+      }
+      if (this.isLogin != 'true') {
+        this.popoverVisible = false
+      }
+    },
+    overCheck(e){
+      let target = e.currentTarget;
+      let icon = target.lastElementChild;
+      icon.style.display="block";
+    },
+    outCheck(e){
+      let target = e.currentTarget;
+      let icon = target.lastElementChild;
+      icon.style.display="none";
+    },
+    deleteContent(e) {
+      let target = e.currentTarget;
+      let checkBox = target.previousElementSibling;
+      let delContent = checkBox.lastElementChild.innerText;
+      let list = this.banContentListTemp
+      for (var i = 0; i < list.length; i++) {
+        if (list[i] == delContent){
+          this.banContentListTemp.splice(i, 1);
+          break;
+        }
+      }
+      let list2 = this.checkedContentListTemp
+      for (var j = 0; j < list2.length; j++) {
+        if (list2[j] == delContent){
+          this.checkedContentListTemp.splice(j, 1);
+          break;
+        }
+      }
+    },
+    addBan(value){
+      if (this.banContentList.indexOf(value) > -1){
+        this.$notify({
+          title: '提醒',
+          message: '关键词重复数',
+          type: 'warning',
+          position: "bottom-right",
+          duration: "1500",
+          showClose: false
+        });
+      } else if(value.indexOf(";") > -1) {
+        this.$notify({
+          title: '提醒',
+          message: '屏蔽词不能包含“;”',
+          type: 'warning',
+          position: "bottom-right",
+          duration: "1500",
+          showClose: false
+        });
+      } else {
+        this.banContentListTemp.push(value);
+        this.newContent = "";
+      }
+    },
+    hasNewContent(value){
+      if(value==""||value==undefined||value==null){
+        return false;
+      }
+      return true;
     },
     getUrl(){
       if (this.platform == 'bilibili'){
@@ -218,8 +448,17 @@ export default {
   mounted() {
     this.init()
   },
+  computed: {
+    banContentListComputed: function() {
+      return this.banContentListTemp.filter((item) => {
+        return item.trim()!=null && item.trim()!=''
+      })
+    }
+  },
   watch:{
     'isLogin': function (val){
+      this.popoverVisible = false
+      this.initBan()
       getRoomInfo(this.userInfo.uid, this.platform, this.roomId)
           .then(response => {
             if (response.data.code == 200){
@@ -376,6 +615,16 @@ export default {
   cursor: pointer;
   transform: scale(1.2);
 }
+.room-left-info-right-ban{
+  margin-top: 5px;
+  float: right;
+  margin-right: 25px;
+  transition: all 0.2s;
+}
+.room-left-info-right-ban:hover{
+  cursor: pointer;
+  transform: scale(1.15);
+}
 .room-left-info-right-follow{
   float: right;
   margin-right: 25px;
@@ -399,6 +648,7 @@ export default {
   justify-content: center;
   text-align: justify;
   font-weight: bold;
+  font-size: 20px;
   border-bottom:1px solid #c8c8c9;
 }
 .room-right-body{
@@ -417,10 +667,6 @@ export default {
 .room-right-body::-webkit-scrollbar-thumb {
   border-radius: 10px;
   background: #8e8e8e;
-}
-.el-input /deep/ .el-input__inner{
-  border-radius: 20px;
-  background-color: #eaeaea;
 }
 .danmu{
   position: absolute;
@@ -468,6 +714,72 @@ export default {
   margin-top: 20px;
   font-weight: normal;
   text-align: center;
+}
+.el-input-number {
+  width: 80px;
+}
+.global-ban{
+  font-weight: normal;
+  font-size: 20px;
+  color: #409EFF;
+  margin-bottom: 10px;
+}
+.el-input {
+  width: 150px;
+}
+.ban-content-btn{
+  margin-left: 10px;
+}
+.ban-content-div{
+  display: flex;
+  /*实现垂直居中*/
+  align-items: center;
+  /*实现水平居中*/
+  justify-content: center;
+  text-align: justify;
+  margin-bottom: 10px;
+}
+.ban-content-list{
+  min-height: 20px;
+  max-height: 200px;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.ban-content-list::-webkit-scrollbar {
+  width: 8px;
+  /*height: 4px;*/
+}
+.ban-content-list::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #8e8e8e;
+}
+.room-left-info-right-ban-login-div {
+  font-size: 15px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+  width: 100%;
+}
+.room-left-info-right-ban-login {
+  color: #007ACC;
+  transition: all 0.1s;
+}
+.room-left-info-right-ban-login:hover {
+  transform: scale(1.1);
+  cursor: pointer;
+}
+.ban-content-list-icon{
+  display: none;
+  font-size: 15px;
+  position: absolute;
+  right: 10px;
+  top: 3px;
+  color: #fc5e5e;
+}
+.ban-content-list-icon:hover{
+  cursor: pointer;
+  color: red;
 }
 a:link { text-decoration: none;color: #4e4c4c}
 a:active { text-decoration:blink}

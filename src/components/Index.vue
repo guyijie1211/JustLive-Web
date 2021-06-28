@@ -193,7 +193,6 @@ export default {
       let _this = this
       this.userInfo = userInfo
       this.isLogin = 'true'
-      console.log("save data")
       sessionStorage.setItem('userInfo', JSON.stringify(this.userInfo))
       sessionStorage.setItem('isLogin', this.isLogin)
       _this.$emit("loginSuccess",userInfo)

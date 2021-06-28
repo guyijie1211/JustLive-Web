@@ -4,8 +4,6 @@
 
 <script>
 import Hls from 'hls.js';
-// const huya_danmu = require('huya-danmu')
-// const douyu = require('douyudm')
 import Artplayer from 'artplayer';
 import artplayerPluginDanmuku from 'artplayer-plugin-danmuku';
 import Global from "@/components/Global";
@@ -13,7 +11,8 @@ import {getRealUrl} from "@/api/liveList";
 
 export default {
   name: "ArtPlayerTest",
-  props: ['platform','roomId','isLive'],
+  props: ['platform','roomId','isLive','banActive',
+    'banLevel','banContentList','checkedContentList'],
   data() {
     return {
       player: null,
@@ -53,7 +52,6 @@ export default {
              // eslint-disable-next-line no-prototype-builtins
              if (data.hasOwnProperty("SD")) {
                let SD = {
-                 default: true,
                  name: "高清",
                  url: data.SD,
                }
@@ -70,6 +68,7 @@ export default {
              // eslint-disable-next-line no-prototype-builtins
              if (data.hasOwnProperty("OD")) {
                let OD = {
+                 default: true,
                  name: "原画",
                  url: data.OD,
                }
@@ -160,20 +159,21 @@ export default {
             packet.body.forEach((body) => {
               switch (body.cmd) {
                 case 'DANMU_MSG':
-                  console.log(`${body.info[2][1]}: ${body.info[1]}`);
-                  var someDanmakuAObj = {
-                    text: `${body.info[1]}`, // Danmu text
-                    color: '#fff', // Danmu color
-                    size: 17, // Danmu size
-                    border: false, // Danmu border
-                    mode: 0, // Danmu mode: 0-scroll or 1-static
-                  };
-                  art.plugins.artplayerPluginDanmuku.emit(someDanmakuAObj);
-                  var newDanmu = {
-                    fromName: `${body.info[2][1]}`,
-                    msg: `${body.info[1]}`
+                  if (_this.isBanned(body.info[4][0], `${body.info[1]}`)) {
+                    var newDanmu = {
+                      fromName: `${body.info[2][1]}`,
+                      msg: `${body.info[1]}`
+                    }
+                    _this.$emit("newDanmuSend", newDanmu)
+                    var someDanmakuAObj = {
+                      text: `${body.info[1]}`, // Danmu text
+                      color: '#fff', // Danmu color
+                      size: 17, // Danmu size
+                      border: false, // Danmu border
+                      mode: 0, // Danmu mode: 0-scroll or 1-static
+                    };
+                    art.plugins.artplayerPluginDanmuku.emit(someDanmakuAObj);
                   }
-                  _this.$emit("newDanmuSend", newDanmu)
                   break;
               }
             })
@@ -205,20 +205,21 @@ export default {
             console.log('获取直播间弹幕成功');
             break;
           case "chatmsg":
-            console.log(packet.body.nn + ": " + packet.body.txt);
-            var someDanmakuAObj = {
-              text: packet.body.txt, // Danmu text
-              color: '#fff', // Danmu color
-              size: 10, // Danmu size
-              border: false, // Danmu border
-              mode: 0, // Danmu mode: 0-scroll or 1-static
-            };
-            art.plugins.artplayerPluginDanmuku.emit(someDanmakuAObj);
-            var newDanmu = {
-              fromName: packet.body.nn,
-              msg: packet.body.txt
+            if (_this.isBanned(packet.body.level, packet.body.txt)) {
+              var someDanmakuAObj = {
+                text: packet.body.txt, // Danmu text
+                color: '#fff', // Danmu color
+                size: 10, // Danmu size
+                border: false, // Danmu border
+                mode: 0, // Danmu mode: 0-scroll or 1-static
+              };
+              art.plugins.artplayerPluginDanmuku.emit(someDanmakuAObj);
+              var newDanmu = {
+                fromName: packet.body.nn,
+                msg: packet.body.txt
+              }
+              _this.$emit("newDanmuSend", newDanmu)
             }
-            _this.$emit("newDanmuSend", newDanmu)
             break;
         }
       };
@@ -245,22 +246,50 @@ export default {
         reader.onload = function () {
           let msg_obj = Global._on_mes(this.result)
           if (msg_obj.type == "chat") {
-            var someDanmakuAObj = {
-              text: msg_obj.content, // Danmu text
-              color: '#fff', // Danmu color
-              size: 10, // Danmu size
-              border: false, // Danmu border
-              mode: 0, // Danmu mode: 0-scroll or 1-static
-            };
-            art.plugins.artplayerPluginDanmuku.emit(someDanmakuAObj);
-            var newDanmu = {
-              fromName: msg_obj.name,
-              msg: msg_obj.content
+            if (_this.isBanned("999", msg_obj.content)) {
+              var someDanmakuAObj = {
+                text: msg_obj.content, // Danmu text
+                color: '#fff', // Danmu color
+                size: 10, // Danmu size
+                border: false, // Danmu border
+                mode: 0, // Danmu mode: 0-scroll or 1-static
+              };
+              art.plugins.artplayerPluginDanmuku.emit(someDanmakuAObj);
+              var newDanmu = {
+                fromName: msg_obj.name,
+                msg: msg_obj.content
+              }
+              _this.$emit("newDanmuSend", newDanmu)
             }
-            _this.$emit("newDanmuSend", newDanmu)
           }
         }
       }
+    },
+    testDanmuBan(text){
+      for (let i=0; i<this.checkedContentList.length; i++) {
+        let banContent = this.checkedContentList[i];
+        let reg = new RegExp(banContent);
+        if (reg.test(text)){
+          return true;
+        }
+      }
+      return false;
+    },
+    isReg(reg) {
+      let isReg;
+      try {
+        isReg = eval(reg) instanceof RegExp;
+      } catch (e) {
+        isReg = false;
+      }
+      return isReg;
+    },
+    isBanned(level, danmuContent) {
+      let _this = this;
+      if(!_this.banActive || (Number(level)>Number(_this.banLevel) && !_this.testDanmuBan(danmuContent))) {
+        return true;
+      }
+      return false;
     },
   },
   mounted() {

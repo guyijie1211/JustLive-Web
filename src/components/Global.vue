@@ -154,7 +154,6 @@ const byteToMsg = function (buf) {
     }
     return arrayCopy.buffer
   } else {
-    console.log("eeeeee")
     throw new Error('Argument must be a Buffer')
   }
 }
