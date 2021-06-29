@@ -64,16 +64,9 @@ export default {
           userApi(this.loginForm.username, md5(this.loginForm.password))
               .then(response => {
                 if(response.data.code === 200){
-                  let userInfo = {
-                    uid: response.data.data.uid,
-                    userName: response.data.data.userName,
-                    nickName: response.data.data.nickName,
-                    firstLetter: response.data.data.firstLetter,
-                    banInfos: response.data.data.banInfos
-                  }
                   this.loginForm.username = ''
                   this.loginForm.password = ''
-                  _this.$emit("loginResult", "success", userInfo)
+                  _this.$emit("loginResult", "success", response.data.data)
                 }
                 if(response.data.code === 400){
                   this.$message({

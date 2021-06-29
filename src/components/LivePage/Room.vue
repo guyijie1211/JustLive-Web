@@ -138,11 +138,11 @@ export default {
       popoverVisible: false,
       loading: false,
       banActive: false,
-      banLevel: 0,
+      banLevel: 1,
       banContentList: [],
       checkedContentList: [],
       banActiveTemp: false,
-      banLevelTemp: 0,
+      banLevelTemp: 1,
       banContentListTemp: [],
       checkedContentListTemp: [],
       newContent:"",
@@ -164,25 +164,36 @@ export default {
             this.followed = flag
           }
         })
-      if (this.isLogin == "true"){
-        this.initBan()
-      }
+      this.initBan()
     },
     initBan(){
-      let banList = this.userInfo.banInfos
-      for(let i=0;i<banList.length;i++) {
-        let ban = banList[i];
-        if (ban.type == "2") { //0:屏蔽开关,1:屏蔽等级,2:所有屏蔽词,3:生效屏蔽词
-          let banContentList = ban.content.trim().split(";");
-          this.banContentList = banContentList;
-        } else if (ban.type == "3"){
-          let checkedContentList = ban.content.trim().split(";");
-          this.checkedContentList = checkedContentList;
-        } else if (ban.type == "1" && ban.platform == this.platform) {
-          this.banLevel = Number(ban.content);
-        } else if (ban.type == "0" && ban.content == "true") { //0:是否开启弹幕
-          this.banActive = true;
-        }
+      console.log("initBan")
+      let banInfo
+      if (this.isLogin == "true") {
+        banInfo = this.userInfo;
+      } else {
+        banInfo = JSON.parse(sessionStorage.getItem('localBanInfo'));
+      }
+      let banContentList = banInfo.allContent.trim().split(";");
+      if (banContentList[0].trim() == "") {
+        banContentList.splice(0, 1);
+      }
+      this.banContentList = banContentList;
+      let checkedContentList = banInfo.selectedContent.trim().split(";");
+      if (checkedContentList[0].trim() == "") {
+        checkedContentList.splice(0, 1);
+      }
+      this.checkedContentList = checkedContentList;
+      this.banActive = banInfo.isActived == "1" ? true : false;
+      if (this.platform == "douyu") {
+        this.banLevel = Number(banInfo.douyuLevel);
+      } else if (this.platform == "bilibili") {
+        this.banLevel = Number(banInfo.bilibiliLevel);
+      } else if (this.platform == "huya") {
+        this.banLevel = Number(banInfo.huyaLevel);
+      } else if (this.platform == "cc") {
+        this.banLevel = Number(banInfo.ccLevel);
+
       }
       this.banActiveTemp = this.banActive;
       this.banLevelTemp = this.banLevel;
@@ -197,6 +208,7 @@ export default {
       this.checkedContentListTemp = this.checkedContentList;
     },
     activeBan(){
+      let _this = this;
       if (this.isLogin == 'true') {
         this.loading = true;
       }
@@ -204,7 +216,6 @@ export default {
       this.banLevel = this.banLevelTemp;
       this.banContentList = this.banContentListTemp;
       this.checkedContentList = this.checkedContentListTemp;
-      let banList = [];
       let banContent = '';
       for(let i=0;i<this.banContentList.length;i++) {
         let ban = this.banContentList[i];
@@ -214,12 +225,6 @@ export default {
           banContent = ban;
         }
       }
-      let banObj = {
-        type: "2",
-        content: banContent,
-        platform: "null"
-      }
-      banList.push(banObj);
       let checkedContent = '';
       for(let i=0;i<this.checkedContentList.length;i++) {
         let ban = this.checkedContentList[i];
@@ -229,26 +234,23 @@ export default {
           checkedContent = ban;
         }
       }
-      let checkedObj = {
-        type: "3",
-        content: checkedContent,
-        platform: "null"
+      let banObj = this.userInfo;
+      banObj.allContent = banContent;
+      banObj.isActived = this.banActive ? "1" : "0";
+      banObj.selectedContent = checkedContent;
+
+      if (this.platform == "douyu") {
+        banObj.douyuLevel = this.banLevel.toString();
+      } else if (this.platform == "bilibili") {
+        banObj.bilibiliLevel = this.banLevel;
+      } else if (this.platform == "huya") {
+        banObj.huyaLevel = this.banLevel;
+      } else if (this.platform == "cc") {
+        banObj.ccLevel = this.banLevel;
       }
-      banList.push(checkedObj);
-      let activeBanObj = {
-        type: "0",
-        content: this.banActive.toString(),
-        platform: "null"
-      }
-      banList.push(activeBanObj);
-      let levelObj = {
-        type: "1",
-        content: this.banLevel,
-        platform: this.platform,
-      }
-      banList.push(levelObj);
-      this.userInfo.banInfos = banList
+
       if (this.isLogin == 'true') {
+        _this.$emit("changeBan", banObj);
         changeUserInfo(this.userInfo)
             .then(response => {
               this.loading = false;
@@ -265,8 +267,8 @@ export default {
                 });
               }
             })
-      }
-      if (this.isLogin != 'true') {
+      } else {
+        sessionStorage.setItem('localBanInfo', JSON.stringify(banObj))
         this.popoverVisible = false
       }
     },

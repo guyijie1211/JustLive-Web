@@ -31,7 +31,7 @@
       </div>
     </el-header>
     <keep-alive include="Home">
-      <router-view @exitSearch="exitSearch" @inSearch="inSearch" @loginSuccess="loginSuccess" :isLogin="isLogin" :userInfo="userInfo"></router-view>
+      <router-view @exitSearch="exitSearch" @inSearch="inSearch" @loginSuccess="loginSuccess" @changeBan="changeBan" :isLogin="isLogin" :userInfo="userInfo"></router-view>
     </keep-alive>
     <el-dialog
         title="登录"
@@ -197,6 +197,11 @@ export default {
       sessionStorage.setItem('isLogin', this.isLogin)
       _this.$emit("loginSuccess",userInfo)
     },
+    changeBan(userInfo){
+      let _this = this
+      this.userInfo = userInfo
+      sessionStorage.setItem('userInfo', JSON.stringify(this.userInfo))
+    },
     handleLogin(result, userInfo){
       if(result == "success"){
         this.loginSuccess(userInfo)
@@ -303,6 +308,18 @@ export default {
     }
     if (sessionStorage.getItem('isLogin')) {
       this.isLogin = sessionStorage.getItem('isLogin')
+    }
+    if (!sessionStorage.getItem('localBanInfo')) {
+      let banObj = {
+        isActived: "0",
+        allContent: "",
+        selectedContent: "",
+        douyuLevel: "1",
+        bilibiliLevel: "1",
+        huyaLevel: "1",
+        ccLevel: "1",
+      }
+      sessionStorage.setItem('localBanInfo', JSON.stringify(banObj));
     }
   },
   mounted() {
