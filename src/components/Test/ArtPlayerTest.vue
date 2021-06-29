@@ -19,6 +19,7 @@ export default {
       quality: [],
       ws: null,
       huyaAyyuid: '',
+      hls: null,
     }
   },
   methods: {
@@ -96,6 +97,7 @@ export default {
                    const hls = new Hls();
                    hls.loadSource(url);
                    hls.attachMedia(video);
+                   _this.hls = hls
                  },
                },
                plugins: [
@@ -122,6 +124,13 @@ export default {
                    },
                  },
                ],
+             });
+             art.on('destroy', function (args) {
+               _this.hls.destroy();
+             });
+             art.on('switch', function (args) {
+               _this.hls.destroy();
+               art.play = true;
              });
              this.player = art
              if(this.platform == 'bilibili'){
@@ -297,7 +306,7 @@ export default {
   },
   beforeDestroy() {
     if(this.player){
-      this.player.destroy
+      this.player.destroy()
     }
     clearInterval(this.interval)
     if(this.ws){
