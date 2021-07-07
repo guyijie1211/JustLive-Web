@@ -327,5 +327,12 @@ export default {
 .artplayer-app{
   width: 100%;
   height: 100%;
+  /*pointer-events: none;*/
+}
+</style>
+
+<style>
+.art-video-player .art-poster, .art-video-player .art-video{
+  pointer-events: none;
 }
 </style>

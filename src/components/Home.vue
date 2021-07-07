@@ -20,13 +20,13 @@
           <div class="home-aside-item-icon"><i class="iconfont icon-fenlei"></i></div>
           <div class="home-aside-item-words">分区</div>
         </router-link>
-        <div class="home-aside-bottom">
+        <div class="home-aside-bottom" @click="toGithub()">
           <div class="home-aside-bottom-words">问题反馈</div>
-          <div class="home-aside-bottom-icon"><i class="el-icon-chat-line-square"></i></div>
+<!--          <div class="home-aside-bottom-icon"><i class="el-icon-chat-line-square"></i></div>-->
         </div>
         <div class="beside-aside"></div>
       </el-aside>
-      <el-main v-infinite-scroll="load" class="home-main">
+      <el-main id="home-main" v-infinite-scroll="load" class="home-main">
         <keep-alive exclude="PlatformRooms,AreaAll">
           <router-view ref="mychild" @loginSuccess="loginSuccess" @activated="activated" :isLogin="isLogin" :userInfo="userInfo"></router-view>
         </keep-alive>
@@ -52,6 +52,9 @@ export default {
     }
   },
   methods: {
+    toGithub(){
+      window.open("https://github.com/guyijie1211/MixLive-vue/issues/new", "_blank");
+    },
     load(){
       this.$refs.mychild.loadRoomList();
     },
@@ -137,21 +140,23 @@ export default {
   width: 100%;
   position:absolute;
   bottom:0;
-  padding-bottom: 20px;
+  padding-bottom: 30px;
+  transition: all 0.1s;
+  text-align: center;
 }
 .home-aside-bottom:hover{
   cursor: pointer;
-  color: #00bafa;
+  transform: scale(1.2);
 }
 .home-aside-bottom-icon{
   margin-left: 10px;
   font-size: 15px;
 }
 .home-aside-bottom-words{
-  font-size: 15px;
+  font-size: 16px;
   font-weight: lighter;
-  margin-left: 20px;
-  float: left;
+  /*margin-left: 20px;*/
+  /*float: left;*/
 }
 /deep/ .el-input__inner{
   height: 40px;
@@ -163,6 +168,7 @@ a {
 }
 .home-main{
   overflow-x: hidden;
+  overflow-y: auto;
 }
 .home-main::-webkit-scrollbar {
   width: 8px;

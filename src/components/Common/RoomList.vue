@@ -1,32 +1,40 @@
 <template>
   <el-row class="recommend-room-row" :gutter="20">
-    <el-col class="recommend-room-col" :span="6" v-for="(room, index) in roomList" :key="index">
-      <el-card @click.native="toRoom(room.platForm, room.roomId)" shadow="hover" class="recommend-room-card">
-        <div class="recommend-room-pic">
-          <div class="pic-bottom">
-            <div class="pic-bottom-area">
-              {{ room.categoryName }}
+    <transition-group name="card">
+      <el-col class="recommend-room-col" :span="6" v-for="(room, index) in roomList" :key="index">
+        <el-card @click.native="toRoom(room.platForm, room.roomId)" shadow="hover" class="recommend-room-card">
+          <div class="recommend-room-pic">
+            <div class="pic-bottom">
+              <div class="pic-bottom-area">
+                {{ room.categoryName }}
+              </div>
+              <div class="pic-bottom-number">
+                <i class="el-icon-user"></i>{{ handleOnline(room.online) }}
+              </div>
             </div>
-            <div class="pic-bottom-number">
-              <i class="el-icon-user"></i>{{ handleOnline(room.online) }}
+            <el-image v-if="room.isLive == 1"
+                      class="recommend-room-pic-img"
+                      :src="room.roomPic"
+                      :fit="fit">
+<!--              <div slot="placeholder" class="image-placeholder-slot">-->
+<!--                <i class="el-icon-loading image-placeholder"></i>-->
+<!--              </div>-->
+            </el-image>
+            <div v-if="room.isLive == 0" class="recommend-room-pic-notLive">未开播</div>
+          </div>
+          <div class="recommend-room-under-pic">
+            <div class="recommend-room-info-head">
+              <el-image :src=room.ownerHeadPic fit="fill" style="border-radius: 8px;"/>
+            </div>
+            <div class="recommend-room-info">
+              <span class="recommend-room-info-owner">{{ getPlatform(room.platForm) }}·{{ room.ownerName }}</span>
+              <span class="recommend-room-info-roomName">{{ room.roomName }}</span>
             </div>
           </div>
-          <img v-if="room.isLive == 1" class="recommend-room-pic-img" :src=room.roomPic />
-          <div v-if="room.isLive == 0" class="recommend-room-pic-notLive">未开播</div>
-        </div>
-        <div class="recommend-room-under-pic">
-          <div class="recommend-room-info-head">
-            <el-image :src=room.ownerHeadPic fit="fill" style="border-radius: 8px;"/>
-          </div>
-          <div class="recommend-room-info">
-            <span class="recommend-room-info-owner">{{ getPlatform(room.platForm) }}·{{ room.ownerName }}</span>
-            <span class="recommend-room-info-roomName">{{ room.roomName }}</span>
-          </div>
-        </div>
-      </el-card>
-    </el-col>
-    <div class="roomList-load" v-loading="loading" element-loading-background="rgba(255, 255, 255, 0.8)">
-
+        </el-card>
+      </el-col>
+    </transition-group>
+      <div class="roomList-load" v-loading="loading" element-loading-background="rgba(255, 255, 255, 0.8)">
     </div>
   </el-row>
 </template>
@@ -38,6 +46,7 @@ export default {
   data() {
     return {
       loading: false,
+      fit: "cover",
     }
   },
   methods: {
@@ -113,8 +122,8 @@ export default {
 .recommend-room-pic-img{
   height: 100%;
   width: 100%;
-  object-fit: cover;
-  transition: all 0.6s;
+  /*object-fit: cover;*/
+  /*transition: all 0.6s;*/
 }
 .recommend-room-info-head{
   margin-left: 10px;
@@ -188,6 +197,7 @@ export default {
   left: 0px;
   width: 100%;
   height: 20px;
+  z-index: 100;
   /*background: rgba(0, 0, 0, 0.5);*/
   box-shadow:inset 0px -10px 20px 1px #474747;
 }
@@ -204,5 +214,22 @@ export default {
   font-size: small;
   float: left;
   margin-left: 10px;
+}
+.card-enter{
+  margin-top: 100px;
+}
+.card-enter-active{
+  transition: all 0.7s;
+}
+.image-placeholder-slot{
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  /*background-color: rgba(0, 0, 0, 0.2);*/
+}
+.image-placeholder{
+  position: absolute;
+  top: 50%;
+  left: 50%;
 }
 </style>

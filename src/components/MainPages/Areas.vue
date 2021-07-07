@@ -9,14 +9,20 @@
      </div>
    </div>
    <el-row class="areas-list">
-     <el-col :span="4" v-for="(areaInfo, index) in areaInfoList" :key="index" class="areas-list-col">
-       <div @click="toAreaList(areaInfo.typeName, areaInfo.areaName)" class="areas-list-card">
-         <img class="areas-pic" :src="areaInfo.areaPic">
-         <div class="areas-list-under-card">
-            {{ areaInfo.areaName }}
+     <transition-group name="areapic">
+       <el-col :span="4" v-for="(areaInfo, index) in areaInfoList" :key="index" class="areas-list-col">
+         <div @click="toAreaList(areaInfo.typeName, areaInfo.areaName)" class="areas-list-card">
+           <el-image :fit="fit"
+                     class="areas-pic"
+                     :scroll-container="getElePic()"
+                     :src="areaInfo.areaPic"
+                     @load="imageLoad($event)" lazy/>
+           <div class="areas-list-under-card">
+              {{ areaInfo.areaName }}
+           </div>
          </div>
-       </div>
-     </el-col>
+       </el-col>
+     </transition-group>
    </el-row>
  </div>
 </template>
@@ -32,9 +38,25 @@ export default {
       areaInfoList: [],
       indexNow: 0,
       page: 1,
+      fit: "fill",
     }
   },
   methods: {
+    imageLoad(e){
+      e.currentTarget.style.opacity = "0"
+      this.fadeIn(e.currentTarget, 50);
+    },
+    fadeIn(element,speed){
+      var num = 0;
+      var st = setInterval(function(){
+        num++;
+        element.style.opacity = num/10;
+        if(num>=10)  {  clearInterval(st);  }
+      },speed);
+    },
+    getElePic(){
+      return document.getElementById('home-main');
+    },
     init(){
       getAllAreas()
         .then(response => {
@@ -136,7 +158,6 @@ export default {
 .areas-pic{
   height: 100%;
   width: 100%;
-  object-fit: fill;
 }
 .areas-list-col{
   position: relative;
@@ -152,5 +173,11 @@ export default {
   font-weight: bold;
   color: #4e4c4c;
   font-size: 20px;
+}
+.areapic-enter{
+  margin-top: 100px;
+}
+.areapic-enter-active{
+  transition: all 0.7s;
 }
 </style>

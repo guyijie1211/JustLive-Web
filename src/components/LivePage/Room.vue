@@ -18,7 +18,7 @@
       <div v-else class="room-left-video-notLive">直播间未开播</div>
       <div class="room-left-info">
         <div class="room-left-info-head">
-          <img class="head-pic" :src=roomInfo.ownerHeadPic />
+          <el-image class="head-pic" :src=roomInfo.ownerHeadPic :preview-src-list="getPreList(roomInfo.ownerHeadPic)"  />
         </div>
         <div class="room-left-info-after-head">
           <div class="room-left-info-after-head-name">
@@ -96,11 +96,13 @@
         直播聊天
       </div>
       <div class="room-right-body">
-        <div v-if="danmuSupport">
-          <div class="room-right-show-danmu" v-for="(danmu, index) in danmuList" :key="index">
-            <span class="danmu-name">{{ danmu.fromName }}:</span>
-            <span class="danmu-msg">{{ danmu.msg }}</span>
-          </div>
+        <div class="room-right-body-danmu-box" v-if="danmuSupport">
+          <transition-group name="danmu">
+            <div class="room-right-show-danmu" v-for="(danmu, index) in danmuList" :key="index">l
+              <span class="danmu-name">{{ danmu.fromName }}:</span>
+              <span class="danmu-msg">{{ danmu.msg }}</span>
+            </div>
+          </transition-group>
         </div>
         <div class="not-support" v-else>
           暂不支持{{getPlatform(platform)}}的弹幕
@@ -165,6 +167,9 @@ export default {
           }
         })
       this.initBan()
+    },
+    getPreList(pic){
+      return [pic]
     },
     initBan(){
       console.log("initBan")
@@ -268,7 +273,14 @@ export default {
               }
             })
       } else {
-        sessionStorage.setItem('localBanInfo', JSON.stringify(banObj))
+        sessionStorage.setItem('localBanInfo', JSON.stringify(banObj));
+        this.$notify({
+          title: '成功',
+          message: "屏蔽修改生效",
+          duration: 2000,
+          type: 'success',
+          offset: 50,
+        });
         this.popoverVisible = false
       }
     },
@@ -455,7 +467,7 @@ export default {
       return this.banContentListTemp.filter((item) => {
         return item.trim()!=null && item.trim()!=''
       })
-    }
+    },
   },
   watch:{
     'isLogin': function (val){
@@ -526,7 +538,7 @@ export default {
 .room-right{
   /*background-color: #e0e0e0;*/
   width: 22%;
-  height: 100%;
+  height: 92%;
   position: fixed;
   top: 50px;
   right: 0px;
@@ -684,11 +696,16 @@ export default {
   width: 94%;
 }
 .danmu-name{
+  float: left;
   font-weight: bold;
 }
 .danmu-msg{
   margin-left: 5px;
   font-weight: normal;
+  /*display:block; */
+  white-space:pre-wrap;
+  word-wrap:break-word;
+  overflow:hidden ;
 }
 .to-bottom{
   position: absolute;
@@ -787,4 +804,10 @@ a:link { text-decoration: none;color: #4e4c4c}
 a:active { text-decoration:blink}
 a:hover { text-decoration:underline;color: #4e4c4c}
 a:visited { text-decoration: none;color: #4e4c4c}
+.danmu-enter{
+  padding-left: 50px;
+}
+.danmu-enter-active{
+  transition: all 0.5s;
+}
 </style>
