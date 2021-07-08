@@ -1,5 +1,5 @@
 <template>
- <div class="areas-container">
+ <div v-loading="loading" element-loading-background="rgba(243, 246, 248, 0.8)" class="areas-container">
    <div class="areas-big-word">
      分区列表
    </div>
@@ -39,6 +39,7 @@ export default {
       indexNow: 0,
       page: 1,
       fit: "fill",
+      loading: false,
     }
   },
   methods: {
@@ -58,12 +59,14 @@ export default {
       return document.getElementById('home-main');
     },
     init(){
+      this.loading = true
       getAllAreas()
         .then(response => {
           if (response.data.code == 200){
             this.allAreas = response.data.data
             this.areaInfoList = this.allAreas[0].slice(0, 24)
           }
+          this.loading = false
         })
     },
     toAreaList(typeName, areaName){
