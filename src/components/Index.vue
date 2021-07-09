@@ -83,6 +83,53 @@
         <el-button size="small" type="primary" @click="submitPassword()">确 定</el-button>
       </div>
     </el-dialog>
+    <el-dialog
+        title="更新日志"
+        :visible.sync="updateInfo"
+        width="40%"
+        :show-close="false"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        center>
+      <div class="update-info-timeline">
+        <el-timeline>
+          <el-timeline-item timestamp="2021/07/07" placement="top" color='#0bbd87'>
+            <el-card>
+              <p>增加直播页面弹幕列表、房间列表和分区列表的动画效果</p>
+            </el-card>
+          </el-timeline-item>
+          <el-timeline-item timestamp="2021/06/29" placement="top">
+            <el-card>
+              <p>修复斗鱼房间人数达到“亿”后导致无法获取房间信息的问题</p>
+            </el-card>
+          </el-timeline-item>
+          <el-timeline-item timestamp="2021/06/28" placement="top">
+            <el-card>
+              <p>增加弹幕屏蔽功能（支持用户等级和弹幕内容屏蔽）</p>
+            </el-card>
+          </el-timeline-item>
+          <el-timeline-item timestamp="2021/06/27" placement="top">
+            <el-card>
+              <p>修复虎牙接口更新导致的问题</p>
+            </el-card>
+          </el-timeline-item>
+          <el-timeline-item timestamp="2021/06/08" placement="top">
+            <el-card>
+              <p>网站升级Https协议</p>
+            </el-card>
+          </el-timeline-item>
+          <el-timeline-item timestamp="2021/06/04" placement="top">
+            <el-card>
+              <p>增加虎牙弹幕获取支持</p>
+            </el-card>
+          </el-timeline-item>
+        </el-timeline>
+      </div>
+      <span slot="footer" class="dialog-footer">
+    <el-button type="primary" @click="updateInfoConfirm()">了 解</el-button>
+  </span>
+    </el-dialog>
+
   </el-container>
 </template>
 
@@ -117,6 +164,7 @@ export default {
       }
     }
     return {
+      mixLiveUpdate: "20210709",
       player: null,
       isActive: false,
       searchInput: '',
@@ -129,6 +177,7 @@ export default {
       form:{},
       formPassword:{},
       loading: false,
+      updateInfo: false,
       formPasswordRules: {
         oldPassword: [
           { required: true, message: '请输入旧密码', trigger: 'blur' },
@@ -145,6 +194,10 @@ export default {
     }
   },
   methods: {
+    updateInfoConfirm(){
+      localStorage.setItem("mixLiveUpdate", this.mixLiveUpdate);
+      this.updateInfo = !this.updateInfo;
+    },
     toMain(){
       this.$router.push('/index/home/recommend')
     },
@@ -303,6 +356,9 @@ export default {
     },
   },
   created() {
+    if (localStorage.getItem("mixLiveUpdate") != this.mixLiveUpdate) {
+      this.updateInfo = true;
+    }
     if (sessionStorage.getItem('userInfo')) {
       this.userInfo = JSON.parse(sessionStorage.getItem('userInfo'))
     }
@@ -321,9 +377,6 @@ export default {
       }
       sessionStorage.setItem('localBanInfo', JSON.stringify(banObj));
     }
-  },
-  mounted() {
-
   }
 }
 </script>
@@ -388,5 +441,19 @@ export default {
 }
 .search-btn{
   margin-left: 10px;
+}
+.update-info-timeline{
+  width: 90%;
+  height: 400px;
+  overflow: auto;
+  padding: 10px;
+}
+.update-info-timeline::-webkit-scrollbar {
+  width: 5px;
+  /*height: 4px;*/
+}
+.update-info-timeline::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #8e8e8e;
 }
 </style>
