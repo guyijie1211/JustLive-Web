@@ -10,7 +10,9 @@ import Platforms from "@/components/MainPages/Platforms";
 import PlatformRooms from "@/components/MainPages/PlatformRooms";
 import Areas from "@/components/MainPages/Areas";
 import AreaAll from "@/components/MainPages/AreaAll";
+import Tv from "@/components/MainPages/Tv";
 import ArtPlayerTest from "@/components/Test/ArtPlayerTest";
+import TvLive from "@/components/LivePage/TvLive";
 
 // 解决ElementUI导航栏中的vue-router在3.0版本以上重复点菜单报错问题
 const originalPush = Router.prototype.push
@@ -65,12 +67,22 @@ const router = new Router({
                             component: AreaAll
                         },
                         {
+                            path: '/index/home/tv',
+                            name: 'tv',
+                            component: Tv
+                        },
+                        {
                             path: '/index/home/:platform',
                             name: 'platformRoom',
                             component: PlatformRooms
                         },
 
                     ]
+                },
+                {
+                    path: '/index/tvLive',
+                    name: 'tvLive',
+                    component: TvLive
                 },
                 {
                     path: "/index/liveRoom",

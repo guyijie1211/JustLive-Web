@@ -20,6 +20,10 @@
           <div class="home-aside-item-icon"><i class="iconfont icon-fenlei"></i></div>
           <div class="home-aside-item-words">分区</div>
         </router-link>
+        <router-link class="home-aside-item" to="/index/home/tv">
+          <div class="home-aside-item-icon"><i class="iconfont icon-dianshi2"></i></div>
+          <div class="home-aside-item-words">电视</div>
+        </router-link>
         <div class="home-aside-bottom" @click="toGithub()">
           <div class="home-aside-bottom-words">问题反馈</div>
 <!--          <div class="home-aside-bottom-icon"><i class="el-icon-chat-line-square"></i></div>-->
@@ -78,6 +82,10 @@ export default {
       let beside = document.getElementsByClassName("beside-aside")[0]
       beside.style.transform = 'translateY(135px)'
     },
+    clickTv(){
+      let beside = document.getElementsByClassName("beside-aside")[0]
+      beside.style.transform = 'translateY(180px)'
+    },
     activated(target){
       if (target == 0){
         this.clickRecommend()
@@ -90,6 +98,9 @@ export default {
       }
       if (target == 3){
         this.clickKinds()
+      }
+      if (target == 4){
+        this.clickTv()
       }
     },
   },

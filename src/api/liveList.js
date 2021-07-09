@@ -100,3 +100,9 @@ export const getRecommendByAreaAll = (areaType, area, page) =>
         }
     })
 
+export const getTv = () =>
+    request({
+        url: '/api/live/getTv',
+        method: 'GET',
+    })
+
