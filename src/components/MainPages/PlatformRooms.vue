@@ -101,6 +101,9 @@ export default {
       if (platForm == 'cc'){
         return '网易CC'
       }
+      if (platForm == 'egame'){
+        return '企鹅电竞'
+      }
     },
     selectArea(areaInfo){
       this.page = 1

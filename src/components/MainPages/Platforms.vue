@@ -30,6 +30,16 @@
         </div>
       </el-col>
     </router-link>
+    <router-link :to="{name: 'platformRoom', params: {platform: 'egame'}}">
+      <el-col class="platform-col" :span="11">
+        <div class="pic-div egame-pic-div">
+          <img class="egame-pic" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2F02.imgmini.eastday.com%2Fmobile%2F20180523%2F20180523124758_75665f0f034702de026b216cd60f0f87_7.jpeg&refer=http%3A%2F%2F02.imgmini.eastday.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1629363744&t=c44fc9841a737e2a80c7c873949ebf40">
+        </div>
+        <div class="platform-info">
+          <div class="platform-info-title">企鹅电竞</div>
+        </div>
+      </el-col>
+    </router-link>
     <router-link :to="{name: 'platformRoom', params: {platform: 'cc'}}">
       <el-col class="platform-col" :span="11">
         <div class="pic-div cc-pic-div">
@@ -95,6 +105,9 @@ export default {
 .cc-pic-div{
   background: #FDFDFD;
 }
+.egame-pic-div{
+  background: #252525;
+}
 .douyu-pic{
 
 }
@@ -104,6 +117,11 @@ export default {
 .huya-pic{
 }
 .cc-pic{
+}
+.egame-pic{
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
 }
 .platform-info{
   position: absolute;

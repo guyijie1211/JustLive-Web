@@ -98,7 +98,7 @@
       <div class="room-right-body">
         <div class="room-right-body-danmu-box" v-if="danmuSupport">
           <transition-group name="danmu">
-            <div class="room-right-show-danmu" v-for="(danmu, index) in danmuList" :key="index">l
+            <div class="room-right-show-danmu" v-for="(danmu, index) in danmuList" :key="index">
               <span class="danmu-name">{{ danmu.fromName }}:</span>
               <span class="danmu-msg">{{ danmu.msg }}</span>
             </div>
@@ -369,6 +369,9 @@ export default {
       }
       if (platForm == 'cc'){
         return '网易CC'
+      }
+      if (platForm == 'egame'){
+        return '企鹅电竞'
       }
     },
     isLive(){

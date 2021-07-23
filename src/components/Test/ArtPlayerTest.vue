@@ -19,6 +19,7 @@ export default {
       quality: [],
       ws: null,
       huyaAyyuid: '',
+      eGameToken: '',
       hls: null,
     }
   },
@@ -30,6 +31,10 @@ export default {
            .then(response => {
              let data = response.data.data
              let qualityTemp = []
+             // eslint-disable-next-line no-prototype-builtins
+             if (data.hasOwnProperty("token")) {
+               this.eGameToken = data.token
+             }
              // eslint-disable-next-line no-prototype-builtins
              if (data.hasOwnProperty("ayyuid")) {
                this.huyaAyyuid = data.ayyuid
@@ -139,7 +144,9 @@ export default {
                this.initDouyuWs(art)
              } else if (this.platform == 'huya') {
                this.initHuyaWs(art)
-             }else {
+             } else if (this.platform == 'egame') {
+               this.initEgameWs(art)
+             } else {
                _this.$emit("notSupport")
              }
            })
@@ -274,6 +281,44 @@ export default {
         }
       }
     },
+    initEgameWs(art){
+      const ws = new WebSocket('wss://barragepush.egame.qq.com/sub');
+      this.ws = ws
+      let _this = this
+      ws.onopen = function () {
+        let sendInfo = Global.eGameEncode(_this.eGameToken);
+        ws.send(sendInfo);
+      };
+      this.interval = setInterval(function () {
+        ws.send(Global.eGameHeart());
+      }, 30000);
+      ws.onmessage = async function (msgEvent) {
+        const packet = await Global.eGameDecode(msgEvent.data);
+        let data = packet.body[0].bin_data
+        for (let i = 0; i < data.length; i++) {
+          let msgData = data[i]
+          let type = msgData.type
+          if (type == 0 || type == 3 || type == 9) {
+            if (_this.isBanned(msgData.ext.lvnew, msgData.content)) {
+              var newDanmu = {
+                fromName: msgData.nick,
+                msg: msgData.content
+              }
+              _this.$emit("newDanmuSend", newDanmu)
+              var someDanmakuAObj = {
+                text: msgData.content, // Danmu text
+                color: '#fff', // Danmu color
+                size: 17, // Danmu size
+                border: false, // Danmu border
+                mode: 0, // Danmu mode: 0-scroll or 1-static
+              };
+              art.plugins.artplayerPluginDanmuku.emit(someDanmakuAObj);
+            }
+          }
+        }
+      };
+    },
+
     testDanmuBan(text){
       for (let i=0; i<this.checkedContentList.length; i++) {
         let banContent = this.checkedContentList[i];

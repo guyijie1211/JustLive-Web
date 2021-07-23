@@ -10,7 +10,7 @@ const HUYA = HUYALIB.HUYA
 const Taf = HUYALIB.Taf
 const TafMx = HUYALIB.TafMx
 
-//bilibili弹幕编码
+//bilibili弹幕编码(大端)
 const readInt = function(buffer,start,len){
   let result = 0
   for(let i=len - 1;i >= 0;i--){
@@ -85,7 +85,7 @@ const decode = function(blob){
   });
 }
 
-//斗鱼弹幕编码
+//斗鱼弹幕编码(小端)
 const douyuReadInt = function(buffer,start,len){
   let result = 0
   for(let i=0;i < len;i++){
@@ -156,6 +156,366 @@ const byteToMsg = function (buf) {
   } else {
     throw new Error('Argument must be a Buffer')
   }
+}
+
+//企鹅电竞弹幕编码(大端)
+const eGameReadInt = function(buffer,start,len){
+  let result = 0
+  for(let i=len - 1;i >= 0;i--){
+    result += Math.pow(256,len - i - 1) * buffer[start + i]
+  }
+  return result
+}
+const eGameWriteInt = function(buffer,start,len,value){
+  let i=0
+  while(i<len){
+    buffer[start + i] = value/Math.pow(256,len - i - 1)
+    i++
+  }
+}
+const eGameHeart = function () {
+  let header = [0,0,0,18,0,18,0,1,0,7,0,0,0,1,0,0,0,0];
+  return (new Uint8Array(header)).buffer
+}
+const eGameEncode = function (str) {
+  let data = textEncoder.encode(str);
+  let num = data.byteLength
+  let header = [0,0,getNum(num + 23,1),getNum(num + 23,2),0,18,0,1,0,1,0,0,0,0,0,0,0,0,7,0,0,getNum(num,1),getNum(num,2)]
+  return (new Uint8Array(header.concat(...data))).buffer
+}
+const eGameDecode = function(blob){
+  return new Promise(function(resolve, reject) {
+    let reader = new FileReader();
+    reader.onload = function (e){
+      let buffer = new Uint8Array(e.target.result)
+      let result = {}
+      result.startPosition = 18
+      result.endPosition = eGameReadInt(buffer,0,4)
+      result.seq = eGameReadInt(buffer,10,4)
+      result.op = eGameReadInt(buffer,8,2)
+      result.body = []
+      let i = eGameReadInt(buffer,result.startPosition,4)
+      let n = buffer.slice(result.startPosition, result.endPosition);
+      if (n.length >= (4 + i)) {
+        let o = n.slice(4, 4+i)
+        let a = S(o,0)
+        let y = ye(a)
+        result.body.push(y)
+      }
+      resolve(result)
+    }
+    reader.readAsArrayBuffer(blob);
+  });
+}
+
+const getNum = function (num, index) {
+  let numTwo = num.toString(2);
+  let zeros = "";
+  for (let i = 0; i < 16-numTwo.length; i++) {
+    zeros = zeros + "0";
+  }
+  numTwo = zeros + numTwo;
+  let num2 = parseInt(numTwo.substr((index-1) * 8, 8));
+  return parseInt(num2,2);
+}
+const ye = function (e) {
+  return T({
+    'resultObj': e,
+    'template': ie,
+    'afterChange': 1,
+  })
+}
+
+const T = function (e){
+  let i = e.resultObj[0];
+  let n = e.template;
+  let r = e.afterChange;
+  let a = {}
+  for(let s in n){
+    for (let t=0; t<i.length; t++) {
+      if (i[t]["tag"] == n[s]) {
+        let q = i[t]
+        let p = q["value"];
+        let c = q.ext
+        if (r) {
+          a[s] = afterChange(e.resultObj[1], s, c, p, a)
+        } else {
+          a[s] = p
+        }
+        break;
+      }
+    }
+  }
+  return a;
+}
+const afterChange = function (e,t,i,n,o) {
+  if(t == "bin_data") {
+    let v = []
+    let ve = {}
+    for (let m=0; m<n.length; m++) {
+      let a = S(e,n[m].ext)
+      let b = o.msg_type;
+      if (b == 1) {
+        ve = T({
+          'resultObj': a,
+          'template': ne
+        })
+      } else if (b == 2) {
+        ve = T({
+          'resultObj': a,
+          'template': oe
+        })
+      }
+      v.push(ve)
+    }
+    return v
+  } else {
+    return n
+  }
+}
+const ne = {
+  'uid': 0,
+  'msgid': 1,
+  'nick': 2,
+  'content': 3,
+  'tm': 4,
+  'type': 5,
+  'scenes_flag': 6,
+  'ext': 7,
+  'send_scenes': 8
+}
+const oe = {
+  'event_id': 0,
+  'event_name': 1,
+  'info': 2,
+  'params': 3,
+  'bin_data': 4
+}
+const ie = {
+  'event_id': 0,
+  'msg_type': 1,
+  'bin_data': 2,
+  'params': 3,
+  'start_tm': 4,
+  'data_list': 6,
+  'end_tm': 5,
+  'message_seq': 7,
+}
+const S = function (e,t) {
+  let i = [];
+  let n = e.length;
+  while(t < n) {
+    let o = m(e,t)
+    let dict = {
+      'value': o.value,
+      'lastPosition': o.position,
+      'ext': o.ext,
+      'tag': o.tag
+    }
+    i.push(dict)
+    t = o.position
+  }
+  return [i,e]
+}
+const m = function (e,t) {
+  let value = '';
+  let position = '';
+  let ext = '';
+  let i = e
+  let a = eGameReadInt(i,t,1)
+  let tag = (240 & a) >> 4
+  let type = 15 & a
+  let s_position = t + 1
+  let result
+  switch (type) {
+    case 0: result = f0(i,s_position)
+        value = result[0]
+        position = result[1]
+      break;
+    case 1: result = f1(i,s_position)
+      value = result[0]
+      position = result[1]
+      break;
+    case 2: result = f2(i,s_position)
+      value = result[0]
+      position = result[1]
+      break;
+    case 3: result = f3(i,s_position)
+      value = result[0]
+      position = result[1]
+      break;
+    case 4: result = f4(i,s_position)
+      value = result[0]
+      position = result[1]
+      break;
+    case 5: result = f5(i,s_position)
+      value = result[0]
+      position = result[1]
+      break;
+    case 6: result = f6(i,s_position)
+      value = result[0]
+      position = result[1]
+      ext = result[2]
+      break;
+    case 7: result = f7(i,s_position)
+      value = result[0]
+      position = result[1]
+      ext = result[2]
+      break;
+    case 8: result = f8(i,s_position)
+      value = result[0]
+      position = result[1]
+      break;
+    case 9: result = f9(i,s_position)
+      value = result[0]
+      position = result[1]
+      break;
+    case 10: result = f10(i,s_position)
+      value = result[0]
+      position = result[1]
+      break;
+    case 11: result = f11(i,s_position)
+      value = result[0]
+      position = result[1]
+      break;
+    case 12: result = f12(i,s_position)
+      value = result[0]
+      position = result[1]
+      break;
+    case 13: result = f13(i,s_position)
+      value = result[0]
+      position = result[1]
+      break;
+  }
+  i = ''
+  return {
+    'i': i,
+    'tag': tag,
+    'type': type,
+    'value': value,
+    'position': position,
+    'ext': ext
+  }
+}
+const f0 = function (e,t){
+  let o = 1
+  let n
+  try {
+    n = eGameReadInt(e,t,1)
+  } catch (err) {
+    n = ''
+  }
+  return [n, t + o]
+}
+const f1 = function (e,t){
+  let o = 2
+  let n
+  try {
+    n = eGameReadInt(e,t,2)
+  } catch (err) {
+    n = ''
+  }
+  return [n, t + o]
+}
+const f2 = function (e,t){
+  let o = 4
+  let n
+  try {
+    n = eGameReadInt(e,t,4)
+  } catch (err) {
+    n = ''
+  }
+  return [n, t + o]
+}
+const f3 = function (e,t){
+  e = eGameReadInt(e,t,8)
+  let position = t + 8
+  return [e, position]
+}
+const f4 = function (e,t){
+  let o = 4
+  let n
+  try {
+    n = eGameReadInt(e,t,4)
+  } catch (err) {
+    n = ''
+  }
+  return  [n, t + o]
+}
+const f5 = function (e,t){
+  let o = 8
+  let n
+  try {
+    n = eGameReadInt(e,t,8)
+  } catch (err) {
+    n = ''
+  }
+  return [n, t + o]
+}
+const f6 = function (e,t){
+  let n = eGameReadInt(e,t,1)
+  let r = t + 1
+  let s = r + n
+  let value = textDecoder.decode(e.slice(r,s));
+  return [value, s, r]
+}
+const f7 = function (e,t){
+  let n = eGameReadInt(e,t,4)
+  let r = t + 4
+  let s = r + n
+  let value = textDecoder.decode(e.slice(r,s));
+  return [value, s, r]
+}
+const f8 = function (e,t){
+  let i = {}
+  let b = m(e,t)
+  let o = b.value
+  let r = b.position
+  while(o > 0) {
+    let a = m(e,r)
+    let s = m(e,a.position)
+    if (a.tag === 0 && s.tag === 1) {
+      i[a.value] = s.value
+    }
+    r = s.position
+    o = o - 1
+  }
+  return [i, r]
+}
+const f9 = function (e,t){
+  let i = m(e,t)
+  let n = i.value
+  let o = i.position
+  let r = []
+  while(n > 0) {
+    let a = m(e,o)
+    r.push(JSON.parse(JSON.stringify(a)))
+    o = a.position
+    n = n - 1
+  }
+  return [r, o]
+}
+const f10 = function (e,t){
+  let i = []
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    let n = m(e,t)
+    let t = n.position
+    if (n.type === 11) {
+      return [i, t]
+    }
+    i.push(JSON.parse(JSON.stringify(n.value)))
+  }
+}
+const f11 = function (e,t){
+  return ['', t]
+}
+const f12 = function (e,t){
+  return [0, t]
+}
+const f13 = function (e,t){
+  let i = m(e,t)
+  return [e.slice(t+i.position,i.value), t+i.position+i.value]
 }
 
 
@@ -243,6 +603,9 @@ export default {
   byteToMsg,
   huyaSendPingReq,
   _on_mes,
-  _bind_ws_info
+  _bind_ws_info,
+  eGameEncode,
+  eGameDecode,
+  eGameHeart
 }
 </script>
