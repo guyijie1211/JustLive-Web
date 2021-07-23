@@ -1,6 +1,6 @@
 <template>
     <el-container class="home-under-header">
-      <el-aside class="home-aside" style="width: 9%">
+      <el-aside class="home-aside" style="width: 130px; ">
 
         <router-link class="home-aside-item" to="/index/home/recommend">
           <div class="home-aside-item-icon"><i class="iconfont icon-home"></i></div>
