@@ -8,9 +8,9 @@
        {{areaList[0].typeName}}
      </div>
    </div>
-   <div class="areas-list">
-     <transition-group name="areapic">
-       <div v-for="(areaInfo, index) in areaInfoList" :key="index" class="areas-list-col">
+   <el-row class="areas-list">
+     <transition-group name="areapic" :gutter="20">
+       <el-col :xs="10" :sm="8" :md="6" :lg="4" :xl="4" v-for="(areaInfo, index) in areaInfoList" :key="index" class="areas-list-col">
          <div @click="toAreaList(areaInfo.typeName, areaInfo.areaName)" class="areas-list-card">
            <el-image :fit="fit"
                      class="areas-pic"
@@ -21,9 +21,9 @@
               {{ areaInfo.areaName }}
            </div>
          </div>
-       </div>
+       </el-col>
      </transition-group>
-   </div>
+   </el-row>
  </div>
 </template>
 
@@ -166,7 +166,7 @@ export default {
   position: relative;
   margin-bottom: 60px;
   height: 240px;
-  float: left;
+  /*float: left;*/
 }
 .areas-list-under-card{
   position: absolute;

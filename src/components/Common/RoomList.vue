@@ -1,7 +1,7 @@
 <template>
-  <div class="recommend-room-row">
+  <el-row id="recommend-room-row" :gutter="20" class="recommend-room-row" type="flex" justify="space-around">
     <transition-group name="card">
-      <div class="recommend-room-col" v-for="(room, index) in roomList" :key="index">
+      <el-col class="recommend-room-col" :xs="20" :sm="10" :md="8" :lg="6" :xl="4" v-for="(room, index) in roomList" :key="index">
         <el-card @click.native="toRoom(room.platForm, room.roomId)" shadow="hover" class="recommend-room-card">
           <div class="recommend-room-pic">
             <div class="pic-bottom">
@@ -16,9 +16,6 @@
                       class="recommend-room-pic-img"
                       :src="room.roomPic"
                       :fit="fit">
-<!--              <div slot="placeholder" class="image-placeholder-slot">-->
-<!--                <i class="el-icon-loading image-placeholder"></i>-->
-<!--              </div>-->
             </el-image>
             <div v-if="room.isLive == 0" class="recommend-room-pic-notLive">未开播</div>
           </div>
@@ -32,11 +29,11 @@
             </div>
           </div>
         </el-card>
-      </div>
+      </el-col>
     </transition-group>
       <div class="roomList-load" v-loading="loading" element-loading-background="rgba(255, 255, 255, 0.8)">
     </div>
-  </div>
+  </el-row>
 </template>
 
 <script>
@@ -47,6 +44,7 @@ export default {
     return {
       loading: false,
       fit: "cover",
+      colNum: 6,
     }
   },
   methods: {
@@ -66,6 +64,9 @@ export default {
       if (platForm == 'cc'){
         return '网易CC'
       }
+      if (platForm == 'egame'){
+        return '企鹅电竞'
+      }
     },
     getLoad(){
       this.loading = true
@@ -84,6 +85,15 @@ export default {
       }
     },
   },
+  mounted() {
+    // window.onresize = function(){
+    //   let _this = this;
+    //   let width = document.getElementById("recommend-room-row").offsetWidth;
+    //   // console.log(width);
+    //   _this.colNum = width/250;
+    //   console.log(this.colNum);
+    // };
+  },
 }
 </script>
 
@@ -92,20 +102,21 @@ export default {
   /*padding-left: 2%;*/
   overflow: hidden;
   padding-bottom: 40px;
-  float: left;
+  /*float: left;*/
 }
 .recommend-room-col{
   margin-top: 25px;
-  margin-left: 30px;
+  /*margin-left: 30px;*/
   height: 170px;
-  float: left;
+  /*float: left;*/
 }
 .recommend-room-col:hover{
   height: 170px;
 }
 .recommend-room-card{
+  margin:0 auto;
   position: relative;
-  margin-left: 10px;
+  /*margin-left: 10px;*/
   height: 170px;
   width: 250px;
   transition: all 0.2s;
@@ -223,16 +234,5 @@ export default {
 }
 .card-enter-active{
   transition: all 0.7s;
-}
-.image-placeholder-slot{
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  /*background-color: rgba(0, 0, 0, 0.2);*/
-}
-.image-placeholder{
-  position: absolute;
-  top: 50%;
-  left: 50%;
 }
 </style>
