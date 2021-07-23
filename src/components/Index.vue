@@ -93,7 +93,17 @@
         center>
       <div class="update-info-timeline">
         <el-timeline>
-          <el-timeline-item timestamp="2021/07/07" placement="top" color='#0bbd87'>
+          <el-timeline-item timestamp="2021/07/20" placement="top" color='#0bbd87'>
+            <el-card>
+              <p>修复房间列表布局问题</p>
+            </el-card>
+          </el-timeline-item>
+          <el-timeline-item timestamp="2021/07/09" placement="top">
+            <el-card>
+              <p>测试功能：电视节目直播</p>
+            </el-card>
+          </el-timeline-item>
+          <el-timeline-item timestamp="2021/07/07" placement="top">
             <el-card>
               <p>增加直播页面弹幕列表、房间列表和分区列表的动画效果</p>
             </el-card>
@@ -164,7 +174,7 @@ export default {
       }
     }
     return {
-      mixLiveUpdate: "20210709",
+      mixLiveUpdate: "20210720",
       player: null,
       isActive: false,
       searchInput: '',
@@ -381,6 +391,11 @@ export default {
 }
 </script>
 
+<style>
+.el-dialog{
+  min-width: 300px;
+}
+</style>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .home-header{
