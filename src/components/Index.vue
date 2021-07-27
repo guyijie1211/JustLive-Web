@@ -93,7 +93,12 @@
         center>
       <div class="update-info-timeline">
         <el-timeline>
-          <el-timeline-item timestamp="2021/07/20" placement="top" color='#0bbd87'>
+          <el-timeline-item timestamp="2021/07/27" placement="top" color='#0bbd87'>
+            <el-card>
+              <p>增加企鹅电竞直播源</p>
+            </el-card>
+          </el-timeline-item>
+          <el-timeline-item timestamp="2021/07/20" placement="top">
             <el-card>
               <p>修复房间列表布局问题</p>
             </el-card>
@@ -174,7 +179,7 @@ export default {
       }
     }
     return {
-      mixLiveUpdate: "20210720",
+      mixLiveUpdate: "20210727",
       player: null,
       isActive: false,
       searchInput: '',

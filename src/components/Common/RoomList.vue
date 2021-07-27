@@ -1,7 +1,6 @@
 <template>
-  <el-row id="recommend-room-row" :gutter="20" class="recommend-room-row" type="flex" justify="space-around">
-    <transition-group name="card">
-      <el-col class="recommend-room-col" :xs="20" :sm="10" :md="8" :lg="6" :xl="4" v-for="(room, index) in roomList" :key="index">
+  <el-row id="recommend-room-row" :gutter="20" class="recommend-room-row">
+      <el-col class="recommend-room-col" :xs="20" :sm="10" :md="8" :lg="6" :xl="6" v-for="(room, index) in roomList" :key="index">
         <el-card @click.native="toRoom(room.platForm, room.roomId)" shadow="hover" class="recommend-room-card">
             <div class="recommend-room-pic">
               <div class="pic-bottom">
@@ -30,7 +29,6 @@
             </div>
           </el-card>
       </el-col>
-    </transition-group>
       <div class="roomList-load" v-loading="loading" element-loading-background="rgba(255, 255, 255, 0.8)">
     </div>
   </el-row>

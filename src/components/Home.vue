@@ -30,9 +30,9 @@
         </div>
         <div class="beside-aside"></div>
       </el-aside>
-      <el-main id="home-main" v-infinite-scroll="load" class="home-main">
+      <el-main id="home-main" class="home-main">
         <keep-alive exclude="PlatformRooms,AreaAll">
-          <router-view ref="mychild" @loginSuccess="loginSuccess" @activated="activated" :isLogin="isLogin" :userInfo="userInfo"></router-view>
+          <router-view ref="mychild" @loginSuccess="loginSuccess" @startLoad="startLoad" @loadFinish="loadFinish" @activated="activated" :isLogin="isLogin" :userInfo="userInfo"></router-view>
         </keep-alive>
       </el-main>
     </el-container>
@@ -53,6 +53,7 @@ export default {
       isActive: false,
       searchInput: '',
       transformFlag: 'translateY(0px)',
+      gettingList: false,
     }
   },
   methods: {
@@ -103,10 +104,25 @@ export default {
         this.clickTv()
       }
     },
+    loadFinish() {
+      this.gettingList = false;
+    },
+    listenerFunction(e) {
+      document.addEventListener('scroll', this.handleScroll, true);
+    },
+    startLoad() {
+      this.gettingList = true
+    },
+    handleScroll () {
+      let target = document.getElementById("home-main")
+      if(!this.gettingList && (target.scrollHeight-target.clientHeight)-target.scrollTop < 5){
+        this.load()
+      }
+    },
   },
-  mounted() {
-
-  }
+  created() {
+    this.listenerFunction();
+  },
 }
 </script>
 

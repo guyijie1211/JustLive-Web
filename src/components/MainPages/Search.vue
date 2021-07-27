@@ -67,6 +67,9 @@ export default {
       }, {
         value: 'cc',
         label: '网易CC'
+      }, {
+        value: 'egame',
+        label: '企鹅电竞'
       }],
       value: 'all',
       selectType: '0',

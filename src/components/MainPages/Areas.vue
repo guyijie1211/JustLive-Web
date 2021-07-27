@@ -78,12 +78,15 @@ export default {
       this.areaInfoList = this.allAreas[index].slice(0, 24)
     },
     loadRoomList(){
+      let _this = this;
       if (this.areaInfoList.length<1){
         return
       }
+      _this.$emit("startLoad")
       this.page++
       let page = this.page
       this.areaInfoList.push(...this.allAreas[this.indexNow].slice((page-1)*24, page*24))
+      _this.$emit("loadFinish")
     },
     getPlatform(platForm){
       if (platForm == 'bilibili'){

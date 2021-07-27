@@ -253,8 +253,6 @@ export default {
         banObj.huyaLevel = this.banLevel;
       } else if (this.platform == "cc") {
         banObj.ccLevel = this.banLevel;
-      } else if (this.platform == "egame") {
-        banObj.egameLevel = this.banLevel;
       }
 
       if (this.isLogin == 'true') {
@@ -358,9 +356,6 @@ export default {
       }
       if (this.platform == 'cc'){
         return 'https://cc.163.com/' + this.roomId
-      }
-      if (this.platform == 'egame'){
-        return 'https://egame.qq.com/' + this.roomId
       }
     },
     getPlatform(platForm){

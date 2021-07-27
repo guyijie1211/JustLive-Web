@@ -42,9 +42,11 @@ export default {
       this.$router.push({ name: 'liveRoom', query:{ platform : platform, roomId : roomId } });
     },
     loadRoomList(){
+      let _this = this
       if (this.roomList.length<1){
         return
       }
+      _this.$emit("startLoad")
       this.$refs.roomList.getLoad()
       this.page++
       console.log("to get page:"+this.page)
@@ -54,6 +56,7 @@ export default {
                 this.roomList.push(...response.data.data)
                 this.$refs.roomList.loadFinish()
               }
+              _this.$emit("loadFinish")
             })
     },
   },
