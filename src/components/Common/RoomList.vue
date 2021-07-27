@@ -3,32 +3,32 @@
     <transition-group name="card">
       <el-col class="recommend-room-col" :xs="20" :sm="10" :md="8" :lg="6" :xl="4" v-for="(room, index) in roomList" :key="index">
         <el-card @click.native="toRoom(room.platForm, room.roomId)" shadow="hover" class="recommend-room-card">
-          <div class="recommend-room-pic">
-            <div class="pic-bottom">
-              <div class="pic-bottom-area">
-                {{ room.categoryName }}
+            <div class="recommend-room-pic">
+              <div class="pic-bottom">
+                <div class="pic-bottom-area">
+                  {{ room.categoryName }}
+                </div>
+                <div class="pic-bottom-number">
+                  <i class="el-icon-user"></i>{{ handleOnline(room.online) }}
+                </div>
               </div>
-              <div class="pic-bottom-number">
-                <i class="el-icon-user"></i>{{ handleOnline(room.online) }}
+              <el-image v-if="room.isLive == 1"
+                        class="recommend-room-pic-img"
+                        :src="room.roomPic"
+                        :fit="fit">
+              </el-image>
+              <div v-if="room.isLive == 0" class="recommend-room-pic-notLive">未开播</div>
+            </div>
+            <div class="recommend-room-under-pic">
+              <div class="recommend-room-info-head">
+                <el-image :src=room.ownerHeadPic fit="fill" style="border-radius: 8px;"/>
+              </div>
+              <div class="recommend-room-info">
+                <span class="recommend-room-info-owner">{{ getPlatform(room.platForm) }}·{{ room.ownerName }}</span>
+                <span class="recommend-room-info-roomName">{{ room.roomName }}</span>
               </div>
             </div>
-            <el-image v-if="room.isLive == 1"
-                      class="recommend-room-pic-img"
-                      :src="room.roomPic"
-                      :fit="fit">
-            </el-image>
-            <div v-if="room.isLive == 0" class="recommend-room-pic-notLive">未开播</div>
-          </div>
-          <div class="recommend-room-under-pic">
-            <div class="recommend-room-info-head">
-              <el-image :src=room.ownerHeadPic fit="fill" style="border-radius: 8px;"/>
-            </div>
-            <div class="recommend-room-info">
-              <span class="recommend-room-info-owner">{{ getPlatform(room.platForm) }}·{{ room.ownerName }}</span>
-              <span class="recommend-room-info-roomName">{{ room.roomName }}</span>
-            </div>
-          </div>
-        </el-card>
+          </el-card>
       </el-col>
     </transition-group>
       <div class="roomList-load" v-loading="loading" element-loading-background="rgba(255, 255, 255, 0.8)">
