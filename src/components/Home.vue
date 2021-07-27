@@ -35,6 +35,7 @@
           <router-view ref="mychild" @loginSuccess="loginSuccess" @startLoad="startLoad" @loadFinish="loadFinish" @activated="activated" :isLogin="isLogin" :userInfo="userInfo"></router-view>
         </keep-alive>
       </el-main>
+      <el-backtop target=".home-main"></el-backtop>
     </el-container>
 </template>
 
@@ -118,6 +119,9 @@ export default {
       if(!this.gettingList && (target.scrollHeight-target.clientHeight)-target.scrollTop < 5){
         this.load()
       }
+    },
+    toTop(){
+
     },
   },
   created() {
@@ -214,5 +218,9 @@ a {
   background: #4e4c4c;
   transition: all 0.3s;
   transform: translateY(0px);
+}
+.to-top{
+  cursor: pointer;
+  background-color: #4e4c4c;
 }
 </style>
