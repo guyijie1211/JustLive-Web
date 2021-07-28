@@ -22,7 +22,7 @@
 
 ## 直播支持
 
-虎牙、斗鱼、BILIBILI直播、网易cc（cc暂无清晰度切换）
+虎牙、斗鱼、BILIBILI直播、网易cc（cc暂无清晰度切换）、企鹅电竞
 
 直播源获取参考	[wbt5/real-url](https://github.com/wbt5/real-url)
 
@@ -30,13 +30,19 @@
 
 ## 弹幕支持(暂不支持弹幕发送)
 
-斗鱼、BILIBILI直播
+斗鱼、BILIBILI直播、虎牙、企鹅电竞
 
 斗鱼弹幕协议参考	[斗鱼开放平台](https://open.douyu.com/source/api/63)
 
 BILIBILI直播弹幕协议参考	[lovelyyoshino/Bilibili-Live-API](https://github.com/lovelyyoshino/Bilibili-Live-API)
 
 ## 更新记录
+
+**2021/07/28**  更换弹幕插件, 优化弹幕体验
+
+**2021/07/27**  增加企鹅电竞直播源
+
+**2021/07/09**  测试功能：电视节目直播
 
 **2021/07/07**  增加直播页面弹幕列表、房间列表和分区列表的动画效果
 
