@@ -4,6 +4,7 @@
 
 <script>
 import Hls from 'hls.js';
+import flvjs from 'flv.js';
 import Artplayer from 'artplayer';
 import Global from "@/components/Global";
 import {getRealUrl} from "@/api/liveList";
@@ -21,7 +22,9 @@ export default {
       ws: null,
       huyaAyyuid: '',
       eGameToken: '',
+      videoType: null,
       hls: null,
+      flv: null,
       danmaku: null,
       danmuShow: true,
     }
@@ -84,12 +87,13 @@ export default {
                qualityTemp.push(OD)
              }
              this.quality = qualityTemp
+             _this.videoType = this.quality[this.quality.length-1].url.indexOf("m3u8") > 0 ? 'customHls' : 'flv';
              var art = new Artplayer({
                container: '.artplayer-app',
                autoplay: true, //自动播放
                isLive: true, //直播
                url: this.quality[this.quality.length-1].url,
-               type: 'customHls',
+               type: this.videoType,
                autoSize: true, //固定视频比例
                autoMini: true, //自动小窗播放
                pip: true,  //画中画
@@ -105,6 +109,15 @@ export default {
                    hls.loadSource(url);
                    hls.attachMedia(video);
                    _this.hls = hls
+                 },
+                 flv: function (video, url) {
+                   const flvPlayer = flvjs.createPlayer({
+                     type: 'flv',
+                     url: url,
+                   });
+                   flvPlayer.attachMediaElement(video);
+                   flvPlayer.load();
+                   _this.flv = flvPlayer
                  },
                },
                controls: [
@@ -127,13 +140,24 @@ export default {
                  },
                ],
              });
-             art.on('destroy', function (args) {
-               _this.hls.destroy();
-             });
-             art.on('switch', function (args) {
-               _this.hls.destroy();
-               art.play = true;
-             });
+             if (_this.videoType == 'customHls') {
+               art.on('destroy', function (args) {
+                 _this.hls.destroy();
+               });
+               art.on('switch', function (args) {
+                 _this.hls.destroy();
+                 art.play = true;
+               });
+             } else if (_this.videoType == 'flv') {
+               art.on('destroy', function (args) {
+                 _this.flv.destroy();
+               });
+               art.on('switch', function (args) {
+                 _this.flv.destroy();
+                 art.play = true;
+               });
+             }
+
              art.on('resize', function (args) {
                _this.danmaku.resize();
              });
