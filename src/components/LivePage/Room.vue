@@ -13,7 +13,8 @@
         <ArtPlayerTest v-if="isLive()" class="room-left-video-play" @notSupport="notSupport"
                        @newDanmuSend="newDanmuSend" :platform="platform" :room-id="roomId"
                        :is-live="isLive" :ban-active="banActive" :ban-level="banLevel"
-                       :ban-content-list="banContentList" :checked-content-list="checkedContentList"/>
+                       :ban-content-list="banContentList" :checked-content-list="checkedContentList"
+                        :danmu-style="danmuStyle" :danmu-speed="danmuSpeed" />
       </div>
       <div v-else class="room-left-video-notLive">直播间未开播</div>
       <div class="room-left-info">
@@ -37,7 +38,7 @@
           <div v-if="platform != 'cc'" class="room-left-info-right-ban">
             <el-popover
                 placement="bottom"
-                width="230"
+                width="330"
                 trigger="manual"
                 v-model="popoverVisible"
                 @hide="banCancel()">
@@ -69,10 +70,25 @@
                           <el-checkbox style="overflow: hidden;" :label="content"></el-checkbox>
                           <i class="el-icon-error ban-content-list-icon" @click="deleteContent($event)"></i>
                         </div>
-
                       </el-col>
                     </el-row>
                   </el-checkbox-group>
+                </div>
+                <div class="danmu-style-title">弹幕样式设置</div>
+                <div class="danmu-cap-div">
+                  <span>不透明度</span><el-slider :show-tooltip="false" @change="saveFont" class="danmu-cap" v-model="danmuStyle.opacity"></el-slider><span class="danmu-cap-value">{{ danmuStyle.opacity }}%</span>
+                </div>
+                <div class="danmu-cap-div">
+                  <span>弹幕字号</span><el-slider :show-tooltip="false" @change="saveFont" class="danmu-cap" v-model="danmuStyle.fontSize"></el-slider><span class="danmu-cap-value">{{ danmuStyle.fontSize }}%</span>
+                </div>
+                <div class="danmu-cap-div">
+                  <span>弹幕速度</span><el-slider :show-tooltip="false" @change="saveFont" :step="20" show-stops class="danmu-cap" v-model="danmuSpeed"></el-slider><span class="danmu-cap-value">{{ speedWord(danmuSpeed) }}</span>
+                </div>
+                <div class="danmu-cap-div">
+                  <span>字体粗细</span><el-slider :show-tooltip="false" @change="saveFont" :step="50" show-stops class="danmu-cap" v-model="danmuStyle.fontWeight"></el-slider><span class="danmu-cap-value">{{ weightWord(danmuStyle.fontWeight) }}</span>
+                </div>
+                <div class="danmu-cap-div">
+                  <span>弹幕描边</span><el-switch v-model="danmuStyle.textShadow"></el-switch>
                 </div>
                 <div style="text-align: center">
                   <el-button size="small" @click="banCancel()">取消</el-button>
@@ -148,6 +164,14 @@ export default {
       banContentListTemp: [],
       checkedContentListTemp: [],
       newContent:"",
+      danmuStyle: {
+        fontSize: 50,
+        color: "#ffffff",
+        textShadow: true,
+        opacity: 100,
+        fontWeight: 50,
+      },
+      danmuSpeed: 20,
       form: {
         content: "",
       }
@@ -157,6 +181,12 @@ export default {
     init(){
       this.platform = this.$route.query.platform
       this.roomId = this.$route.query.roomId
+      if (localStorage.getItem("danmuStyle")) {
+        this.danmuStyle = JSON.parse(localStorage.getItem("danmuStyle"))
+      }
+      if (localStorage.getItem("danmuSpeed")) {
+        this.danmuSpeed = Number(localStorage.getItem("danmuSpeed"))
+      }
       getRoomInfo(this.userInfo.uid, this.platform, this.roomId)
         .then(response => {
           if (response.data.code == 200){
@@ -167,6 +197,7 @@ export default {
           }
         })
       this.initBan()
+
     },
     getPreList(pic){
       return [pic]
@@ -459,6 +490,46 @@ export default {
         }
       }
     },
+    saveFont() {
+      localStorage.setItem('danmuStyle', JSON.stringify(this.danmuStyle))
+      localStorage.setItem('danmuSpeed', this.danmuSpeed)
+    },
+    speedWord(value) {
+      switch (value) {
+        case 0:
+          return "极慢"
+        case 20:
+          return "慢"
+        case 40:
+          return "适中"
+        case 60:
+          return "快"
+        case 80:
+          return "很快"
+        case 100:
+          return "极快"
+      }
+    },
+    weightWord(value) {
+      switch (value) {
+        case 0:
+          return "针细"
+        case 50:
+          return "适中"
+        case 100:
+          return "超粗"
+      }
+    },
+    areaWord(value) {
+      switch (value) {
+        case 0:
+          return "1/4"
+        case 50:
+          return "1/2"
+        case 100:
+          return "全屏"
+      }
+    }
   },
   created() {
     this.listenerFunction();
@@ -494,6 +565,14 @@ export default {
   },
 }
 </script>
+<style>
+.el-slider__runway{
+  position: absolute;
+  top: 0px;
+  width: 200px;
+  margin: 8px 0;
+}
+</style>
 
 <style scoped>
 .room-main-container{
@@ -808,10 +887,24 @@ a:link { text-decoration: none;color: #4e4c4c}
 a:active { text-decoration:blink}
 a:hover { text-decoration:underline;color: #4e4c4c}
 a:visited { text-decoration: none;color: #4e4c4c}
-.danmu-enter{
-  padding-left: 50px;
+.danmu-style-title{
+  width: 100%;
+  color: #3a8ee6;
+  font-size: 20px;
 }
-.danmu-enter-active{
-  transition: all 0.5s;
+.danmu-cap{
+  margin-left: 22%;
+  width: 180px;
+}
+.danmu-cap-div{
+  margin-top: 10px;
+  margin-bottom: 20px;
+  position: relative;
+  width: 100%;
+}
+.danmu-cap-value{
+  position: absolute;
+  top: 0px;
+  right: 10px;
 }
 </style>

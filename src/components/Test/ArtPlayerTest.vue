@@ -1,18 +1,19 @@
 <template>
-  <div class="artplayer-app" ></div>
+  <div id="player" class="artplayer-app" ></div>
 </template>
 
 <script>
 import Hls from 'hls.js';
 import Artplayer from 'artplayer';
-import artplayerPluginDanmuku from 'artplayer-plugin-danmuku';
 import Global from "@/components/Global";
 import {getRealUrl} from "@/api/liveList";
+import Danmaku from 'danmaku';
 
 export default {
   name: "ArtPlayerTest",
   props: ['platform','roomId','isLive','banActive',
-    'banLevel','banContentList','checkedContentList'],
+    'banLevel','banContentList','checkedContentList',
+    'danmuStyle','danmuSpeed'],
   data() {
     return {
       player: null,
@@ -21,6 +22,8 @@ export default {
       huyaAyyuid: '',
       eGameToken: '',
       hls: null,
+      danmaku: null,
+      danmuShow: true,
     }
   },
   methods: {
@@ -105,26 +108,21 @@ export default {
                    _this.hls = hls
                  },
                },
-               plugins: [
-                 artplayerPluginDanmuku({
-                   speed: 8, // Animation time
-                   opacity: 0.8, // Opacity
-                   color: '#fff', // Font color
-                   size: 17, // Font size
-                   maxlength: 50, // The maximum number of words in the danmu
-                   margin: [10, 20], // Margin top and margin bottom
-                   synchronousPlayback: false, // Synchronous playback speed
-                 }),
-               ],
                controls: [
                  {
+                   tooltip: '弹幕开关',
                    position: 'right',
-                   html: '弹幕开关',
+                   html: '<i class="iconfont icon-danmukaiqi" style="font-size: 25px"></i>',
                    click: function () {
-                     if(art.plugins.artplayerPluginDanmuku.isHide) {
-                       art.plugins.artplayerPluginDanmuku.show();
+                     _this.danmuShow = !_this.danmuShow
+                     if(_this.danmuShow) {
+                       document.getElementsByClassName("iconfont icon-danmuguanbi")[0]
+                           .setAttribute("class","iconfont icon-danmukaiqi");
+                       _this.danmaku.show()
                      }else {
-                       art.plugins.artplayerPluginDanmuku.hide();
+                       document.getElementsByClassName("iconfont icon-danmukaiqi")[0]
+                           .setAttribute("class","iconfont icon-danmuguanbi");
+                       _this.danmaku.hide()
                      }
                    },
                  },
@@ -137,6 +135,15 @@ export default {
                _this.hls.destroy();
                art.play = true;
              });
+             art.on('resize', function (args) {
+               _this.danmaku.resize();
+             });
+             this.danmaku = new Danmaku({
+               container: document.getElementsByClassName('art-danmuku')[0],
+               // media: document.getElementsByClassName('art-video')[0],
+             });
+             let speed = (this.danmuSpeed + 25)/100 * 200
+             this.danmaku.speed = speed
              this.player = art
              if(this.platform == 'bilibili'){
                this.initBilibiliWs(art)
@@ -176,19 +183,7 @@ export default {
               switch (body.cmd) {
                 case 'DANMU_MSG':
                   if (_this.isBanned(body.info[4][0], `${body.info[1]}`)) {
-                    var newDanmu = {
-                      fromName: `${body.info[2][1]}`,
-                      msg: `${body.info[1]}`
-                    }
-                    _this.$emit("newDanmuSend", newDanmu)
-                    var someDanmakuAObj = {
-                      text: `${body.info[1]}`, // Danmu text
-                      color: '#fff', // Danmu color
-                      size: 17, // Danmu size
-                      border: false, // Danmu border
-                      mode: 0, // Danmu mode: 0-scroll or 1-static
-                    };
-                    art.plugins.artplayerPluginDanmuku.emit(someDanmakuAObj);
+                    _this.emitDanmu(`${body.info[1]}`, `${body.info[2][1]}`);
                   }
                   break;
               }
@@ -222,19 +217,7 @@ export default {
             break;
           case "chatmsg":
             if (_this.isBanned(packet.body.level, packet.body.txt)) {
-              var someDanmakuAObj = {
-                text: packet.body.txt, // Danmu text
-                color: '#fff', // Danmu color
-                size: 10, // Danmu size
-                border: false, // Danmu border
-                mode: 0, // Danmu mode: 0-scroll or 1-static
-              };
-              art.plugins.artplayerPluginDanmuku.emit(someDanmakuAObj);
-              var newDanmu = {
-                fromName: packet.body.nn,
-                msg: packet.body.txt
-              }
-              _this.$emit("newDanmuSend", newDanmu)
+              _this.emitDanmu(packet.body.txt, packet.body.nn);
             }
             break;
         }
@@ -263,19 +246,7 @@ export default {
           let msg_obj = Global._on_mes(this.result)
           if (msg_obj.type == "chat") {
             if (_this.isBanned("999", msg_obj.content)) {
-              var someDanmakuAObj = {
-                text: msg_obj.content, // Danmu text
-                color: '#fff', // Danmu color
-                size: 10, // Danmu size
-                border: false, // Danmu border
-                mode: 0, // Danmu mode: 0-scroll or 1-static
-              };
-              art.plugins.artplayerPluginDanmuku.emit(someDanmakuAObj);
-              var newDanmu = {
-                fromName: msg_obj.name,
-                msg: msg_obj.content
-              }
-              _this.$emit("newDanmuSend", newDanmu)
+              _this.emitDanmu(msg_obj.content, msg_obj.name);
             }
           }
         }
@@ -300,19 +271,7 @@ export default {
           let type = msgData.type
           if (type == 0 || type == 3 || type == 9) {
             if (_this.isBanned(msgData.ext.lvnew, msgData.content)) {
-              var newDanmu = {
-                fromName: msgData.nick,
-                msg: msgData.content
-              }
-              _this.$emit("newDanmuSend", newDanmu)
-              var someDanmakuAObj = {
-                text: msgData.content, // Danmu text
-                color: '#fff', // Danmu color
-                size: 17, // Danmu size
-                border: false, // Danmu border
-                mode: 0, // Danmu mode: 0-scroll or 1-static
-              };
-              art.plugins.artplayerPluginDanmuku.emit(someDanmakuAObj);
+              _this.emitDanmu(msgData.content, msgData.nick);
             }
           }
         }
@@ -345,9 +304,35 @@ export default {
       }
       return false;
     },
-  },
-  mounted() {
-
+    emitDanmu(text, from) {
+      let _this = this;
+      var someDanmakuAObj = {
+        text: text, // Danmu text
+        style: {
+          fontSize: (this.danmuStyle.fontSize/100 * 40) + "px",
+          color: this.danmuStyle.color,
+          textShadow: this.danmuStyle.textShadow ? '-1px -1px #000, -1px 1px #000, 1px -1px #000, 1px 1px #000' : '',
+          opacity: this.danmuStyle.opacity/100,
+          fontWeight: this.weightChange(this.danmuStyle.fontWeight),
+        },
+      };
+      var newDanmu = {
+        fromName: from,
+        msg: text
+      }
+      _this.$emit("newDanmuSend", newDanmu)
+      this.danmaku.emit(someDanmakuAObj)
+    },
+    weightChange(value) {
+      switch (value) {
+        case 0:
+          return "lighter"
+        case 50:
+          return "normal"
+        case 100:
+          return "bolder"
+      }
+    },
   },
   beforeDestroy() {
     if(this.player){
@@ -357,13 +342,22 @@ export default {
     if(this.ws){
       this.ws.close()
     }
+    if (this.danmaku){
+      this.danmaku.destroy();
+    }
   },
   watch: {
     platform: function() {
       this.$nextTick(() => {
         this.init()
       });
-    }
+    },
+    danmuSpeed: function () {
+      if (this.danmaku){
+        let speed = (this.danmuSpeed + 20)/100 * 300
+        this.danmaku.speed = speed
+      }
+    },
   },
 }
 </script>

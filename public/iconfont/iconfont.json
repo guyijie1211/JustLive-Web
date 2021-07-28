@@ -6,6 +6,41 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "2154862",
+      "name": "播放器-弹幕字体（大）_44",
+      "font_class": "bofangqi-danmuzitida",
+      "unicode": "e6a2",
+      "unicode_decimal": 59042
+    },
+    {
+      "icon_id": "23129875",
+      "name": "弹幕开启",
+      "font_class": "danmukaiqi",
+      "unicode": "e613",
+      "unicode_decimal": 58899
+    },
+    {
+      "icon_id": "23129876",
+      "name": "弹幕关闭",
+      "font_class": "danmuguanbi",
+      "unicode": "e614",
+      "unicode_decimal": 58900
+    },
+    {
+      "icon_id": "2154820",
+      "name": "播放器-弹幕（关）_44",
+      "font_class": "bofangqi-danmuguan",
+      "unicode": "e696",
+      "unicode_decimal": 59030
+    },
+    {
+      "icon_id": "2154821",
+      "name": "播放器-弹幕（开）_44",
+      "font_class": "bofangqi-danmukai",
+      "unicode": "e697",
+      "unicode_decimal": 59031
+    },
+    {
       "icon_id": "1800702",
       "name": "电视机",
       "font_class": "tv",

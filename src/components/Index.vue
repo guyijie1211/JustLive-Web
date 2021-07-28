@@ -93,7 +93,12 @@
         center>
       <div class="update-info-timeline">
         <el-timeline>
-          <el-timeline-item timestamp="2021/07/27" placement="top" color='#0bbd87'>
+          <el-timeline-item timestamp="2021/07/28" placement="top" color='#0bbd87'>
+            <el-card>
+              <p>更换弹幕插件, 优化弹幕体验(弹幕样式设置并入弹幕屏蔽设置中，弹幕样式设置保存在本地浏览器缓存中)</p>
+            </el-card>
+          </el-timeline-item>
+          <el-timeline-item timestamp="2021/07/27" placement="top">
             <el-card>
               <p>增加企鹅电竞直播源</p>
             </el-card>
@@ -179,7 +184,7 @@ export default {
       }
     }
     return {
-      mixLiveUpdate: "20210727",
+      mixLiveUpdate: "20210728",
       player: null,
       isActive: false,
       searchInput: '',

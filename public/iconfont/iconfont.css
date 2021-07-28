@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2329939 */
-  src: url('iconfont.woff2?t=1625721648529') format('woff2'),
-       url('iconfont.woff?t=1625721648529') format('woff'),
-       url('iconfont.ttf?t=1625721648529') format('truetype');
+  src: url('iconfont.woff2?t=1627443085066') format('woff2'),
+       url('iconfont.woff?t=1627443085066') format('woff'),
+       url('iconfont.ttf?t=1627443085066') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,26 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-bofangqi-danmuzitida:before {
+  content: "\e6a2";
+}
+
+.icon-danmukaiqi:before {
+  content: "\e613";
+}
+
+.icon-danmuguanbi:before {
+  content: "\e614";
+}
+
+.icon-bofangqi-danmuguan:before {
+  content: "\e696";
+}
+
+.icon-bofangqi-danmukai:before {
+  content: "\e697";
 }
 
 .icon-tv:before {

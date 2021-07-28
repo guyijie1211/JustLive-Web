@@ -109,7 +109,7 @@ export default {
       this.gettingList = false;
     },
     listenerFunction(e) {
-      document.addEventListener('scroll', this.handleScroll, true);
+
     },
     startLoad() {
       this.gettingList = true
@@ -124,8 +124,13 @@ export default {
 
     },
   },
-  created() {
-    this.listenerFunction();
+  activated() {
+    console.log("activated")
+    document.addEventListener('scroll', this.handleScroll, true);
+  },
+  deactivated() {
+    console.log("deactivated")
+    document.removeEventListener('scroll', this.handleScroll, true);
   },
 }
 </script>
