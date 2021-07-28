@@ -92,7 +92,6 @@ export default {
                type: 'customHls',
                autoSize: true, //固定视频比例
                autoMini: true, //自动小窗播放
-               setting: true,   //设置按钮
                pip: true,  //画中画
                fullscreen: true, //全屏按钮
                aspectRatio: true,  //
