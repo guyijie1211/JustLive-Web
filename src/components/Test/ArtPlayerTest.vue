@@ -14,7 +14,7 @@ export default {
   name: "ArtPlayerTest",
   props: ['platform','roomId','isLive','banActive',
     'banLevel','banContentList','checkedContentList',
-    'danmuStyle','danmuSpeed'],
+    'danmuStyle','danmuSpeed','danmuArea','danmuNum'],
   data() {
     return {
       player: null,
@@ -27,6 +27,7 @@ export default {
       flv: null,
       danmaku: null,
       danmuShow: true,
+      danmuNumStep: 0,
     }
   },
   methods: {
@@ -161,11 +162,14 @@ export default {
              art.on('resize', function (args) {
                _this.danmaku.resize();
              });
+
              this.danmaku = new Danmaku({
                container: document.getElementsByClassName('art-danmuku')[0],
                // media: document.getElementsByClassName('art-video')[0],
              });
+
              let speed = (this.danmuSpeed + 25)/100 * 200
+
              this.danmaku.speed = speed
              this.player = art
              if(this.platform == 'bilibili'){
@@ -344,7 +348,14 @@ export default {
         msg: text
       }
       _this.$emit("newDanmuSend", newDanmu)
-      this.danmaku.emit(someDanmakuAObj)
+      console.log(this.danmaku.comments.length)
+      if (this.danmuNumStep > 0) {
+        this.danmuNumStep --
+        return
+      } else {
+        this.danmaku.emit(someDanmakuAObj)
+        this.danmuNumStep = (100 - this.danmuNum)/10
+      }
     },
     weightChange(value) {
       switch (value) {
@@ -375,11 +386,22 @@ export default {
         this.init()
       });
     },
+    //document.getElementsByClassName('art-danmuku')[0].style.height = "50%"
     danmuSpeed: function () {
       if (this.danmaku){
         let speed = (this.danmuSpeed + 20)/100 * 300
         this.danmaku.speed = speed
       }
+    },
+    danmuArea: function () {
+      if (this.danmaku){
+        this.danmaku.clear()
+        document.getElementsByClassName('art-danmuku')[0].style.height = this.danmuArea + "%"
+        this.danmaku.resize()
+      }
+    },
+    danmuNum: function () {
+      this.danmuNumStep = (100 - this.danmuNum)/10
     },
   },
 }

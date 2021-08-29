@@ -95,52 +95,53 @@
         <el-timeline>
           <el-timeline-item timestamp="2021/07/28" placement="top" color='#0bbd87'>
             <el-card>
-              <p>更换弹幕插件, 优化弹幕体验(弹幕样式设置并入弹幕屏蔽设置中，弹幕样式设置保存在本地浏览器缓存中)</p>
+              <p>+增加弹幕显示区域</p>
+              <p>+增加弹幕密度（建议只在弹幕过多时使用）</p>
+            </el-card>
+          </el-timeline-item>
+          <el-timeline-item timestamp="2021/07/28" placement="top">
+            <el-card>
+              <p>-更换弹幕插件, 优化弹幕体验（弹幕样式设置并入弹幕屏蔽设置中）</p>
             </el-card>
           </el-timeline-item>
           <el-timeline-item timestamp="2021/07/27" placement="top">
             <el-card>
-              <p>增加企鹅电竞直播源</p>
+              <p>+增加企鹅电竞直播源</p>
             </el-card>
           </el-timeline-item>
           <el-timeline-item timestamp="2021/07/20" placement="top">
             <el-card>
-              <p>修复房间列表布局问题</p>
+              <p>-修复房间列表布局问题</p>
             </el-card>
           </el-timeline-item>
           <el-timeline-item timestamp="2021/07/09" placement="top">
             <el-card>
-              <p>测试功能：电视节目直播</p>
+              <p>+测试功能：电视节目直播</p>
             </el-card>
           </el-timeline-item>
           <el-timeline-item timestamp="2021/07/07" placement="top">
             <el-card>
-              <p>增加直播页面弹幕列表、房间列表和分区列表的动画效果</p>
+              <p>+增加直播页面弹幕列表、房间列表和分区列表的动画效果</p>
             </el-card>
           </el-timeline-item>
           <el-timeline-item timestamp="2021/06/29" placement="top">
             <el-card>
-              <p>修复斗鱼房间人数达到“亿”后导致无法获取房间信息的问题</p>
+              <p>-修复斗鱼房间人数达到“亿”后导致无法获取房间信息的问题</p>
             </el-card>
           </el-timeline-item>
           <el-timeline-item timestamp="2021/06/28" placement="top">
             <el-card>
-              <p>增加弹幕屏蔽功能（支持用户等级和弹幕内容屏蔽）</p>
+              <p>+增加弹幕屏蔽功能（支持用户等级和弹幕内容屏蔽）</p>
             </el-card>
           </el-timeline-item>
           <el-timeline-item timestamp="2021/06/27" placement="top">
             <el-card>
-              <p>修复虎牙接口更新导致的问题</p>
-            </el-card>
-          </el-timeline-item>
-          <el-timeline-item timestamp="2021/06/08" placement="top">
-            <el-card>
-              <p>网站升级Https协议</p>
+              <p>-修复虎牙接口更新导致的问题</p>
             </el-card>
           </el-timeline-item>
           <el-timeline-item timestamp="2021/06/04" placement="top">
             <el-card>
-              <p>增加虎牙弹幕获取支持</p>
+              <p>+增加虎牙弹幕获取支持</p>
             </el-card>
           </el-timeline-item>
         </el-timeline>
@@ -184,7 +185,7 @@ export default {
       }
     }
     return {
-      mixLiveUpdate: "20210728",
+      mixLiveUpdate: "2021082901",
       player: null,
       isActive: false,
       searchInput: '',

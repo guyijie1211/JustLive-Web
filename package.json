@@ -17,6 +17,7 @@
     "comment-core-library": "^0.11.1",
     "compression-webpack-plugin": "^5.0.1",
     "core-js": "^3.6.5",
+    "danmaku": "^2.0.2",
     "dns": "^0.2.2",
     "douyudm": "^2.0.1",
     "dplayer": "^1.26.0",

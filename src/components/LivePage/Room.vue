@@ -14,7 +14,8 @@
                        @newDanmuSend="newDanmuSend" :platform="platform" :room-id="roomId"
                        :is-live="isLive" :ban-active="banActive" :ban-level="banLevel"
                        :ban-content-list="banContentList" :checked-content-list="checkedContentList"
-                        :danmu-style="danmuStyle" :danmu-speed="danmuSpeed" />
+                        :danmu-style="danmuStyle" :danmu-speed="danmuSpeed" :danmu-area="danmuArea"
+                        :danmu-num="danmuNum"/>
       </div>
       <div v-else class="room-left-video-notLive">直播间未开播</div>
       <div class="room-left-info">
@@ -82,13 +83,19 @@
                   <span>弹幕字号</span><el-slider :show-tooltip="false" @change="saveFont" class="danmu-cap" v-model="danmuStyle.fontSize"></el-slider><span class="danmu-cap-value">{{ danmuStyle.fontSize }}%</span>
                 </div>
                 <div class="danmu-cap-div">
-                  <span>弹幕速度</span><el-slider :show-tooltip="false" @change="saveFont" :step="20" show-stops class="danmu-cap" v-model="danmuSpeed"></el-slider><span class="danmu-cap-value">{{ speedWord(danmuSpeed) }}</span>
-                </div>
-                <div class="danmu-cap-div">
                   <span>字体粗细</span><el-slider :show-tooltip="false" @change="saveFont" :step="50" show-stops class="danmu-cap" v-model="danmuStyle.fontWeight"></el-slider><span class="danmu-cap-value">{{ weightWord(danmuStyle.fontWeight) }}</span>
                 </div>
                 <div class="danmu-cap-div">
-                  <span>弹幕描边</span><el-switch v-model="danmuStyle.textShadow"></el-switch>
+                  <span>弹幕描边</span><el-switch v-model="danmuStyle.textShadow" style="margin-left: 20px"></el-switch>
+                </div>
+                <div class="danmu-cap-div">
+                  <span>弹幕速度</span><el-slider :show-tooltip="false" @change="saveFont" :step="20" show-stops class="danmu-cap" v-model="danmuSpeed"></el-slider><span class="danmu-cap-value">{{ speedWord(danmuSpeed) }}</span>
+                </div>
+                <div class="danmu-cap-div">
+                  <span>显示区域</span><el-slider :show-tooltip="false" @change="saveFont" :step="25" show-stops class="danmu-cap" v-model="danmuArea"></el-slider><span class="danmu-cap-value">{{ areaWord(danmuArea) }}</span>
+                </div>
+                <div class="danmu-cap-div">
+                  <span>同屏密度<br/>(建议只在弹幕过多时使用)</span><el-slider :show-tooltip="false" @change="saveFont" :step="10" show-stops class="danmu-cap" v-model="danmuNum"></el-slider><span class="danmu-cap-value">{{ danmuNum }}%</span>
                 </div>
                 <div style="text-align: center">
                   <el-button size="small" @click="banCancel()">取消</el-button>
@@ -172,6 +179,8 @@ export default {
         fontWeight: 50,
       },
       danmuSpeed: 20,
+      danmuNum: 100,
+      danmuArea: 100,
       form: {
         content: "",
       }
@@ -186,6 +195,9 @@ export default {
       }
       if (localStorage.getItem("danmuSpeed")) {
         this.danmuSpeed = Number(localStorage.getItem("danmuSpeed"))
+      }
+      if (localStorage.getItem("danmuArea")) {
+        this.danmuArea = Number(localStorage.getItem("danmuArea"))
       }
       getRoomInfo(this.userInfo.uid, this.platform, this.roomId)
         .then(response => {
@@ -493,6 +505,7 @@ export default {
     saveFont() {
       localStorage.setItem('danmuStyle', JSON.stringify(this.danmuStyle))
       localStorage.setItem('danmuSpeed', this.danmuSpeed)
+      localStorage.setItem('danmuArea', this.danmuArea)
     },
     speedWord(value) {
       switch (value) {
@@ -523,11 +536,29 @@ export default {
     areaWord(value) {
       switch (value) {
         case 0:
-          return "1/4"
+          return "建议直接关闭弹幕"
+        case 25:
+          return "1/4屏"
         case 50:
-          return "1/2"
+          return "半屏"
+        case 75:
+          return "3/4屏"
         case 100:
           return "全屏"
+      }
+    },
+    numWord(value) {
+      switch (value) {
+        case 0:
+          return "很少"
+        case 25:
+          return "较少"
+        case 50:
+          return "中等"
+        case 75:
+          return "大量"
+        case 100:
+          return "无限"
       }
     }
   },
