@@ -93,7 +93,12 @@
         center>
       <div class="update-info-timeline">
         <el-timeline>
-          <el-timeline-item timestamp="2021/07/28" placement="top" color='#0bbd87'>
+          <el-timeline-item timestamp="2021/08/30" placement="top" color='#0bbd87'>
+            <el-card>
+              <p>+记忆登录状态</p>
+            </el-card>
+          </el-timeline-item>
+          <el-timeline-item timestamp="2021/08/29" placement="top">
             <el-card>
               <p>+增加弹幕显示区域</p>
               <p>+增加弹幕密度（建议只在弹幕过多时使用）</p>
@@ -157,7 +162,8 @@
 <script>
 import md5 from 'js-md5';
 import Login from "@/components/Login/Login";
-import {changePassword, changeUserInfo} from "@/api/UserApi";
+import {changePassword, changeUserInfo, userApi} from "@/api/UserApi";
+import {outputError} from "@/utils/exception";
 
 export default {
   name: 'Index',
@@ -185,7 +191,7 @@ export default {
       }
     }
     return {
-      mixLiveUpdate: "2021082901",
+      mixLiveUpdate: "2021083001",
       player: null,
       isActive: false,
       searchInput: '',
@@ -215,6 +221,44 @@ export default {
     }
   },
   methods: {
+    doLogin(userName, password) {
+      let _this = this
+      userApi(userName, password)
+          .then(response => {
+            if(response.data.code === 200){
+              let info = response.data.data
+              info.password = password
+              this.loginSuccess(info)
+            }
+            if(response.data.code === 400){
+              localStorage.removeItem("isLogin");
+              localStorage.removeItem("userInfo");
+              this.isLogin = 'false'
+              this.userInfo = {}
+              if (window.document.location.pathname == '/index/home/follows'){
+                this.$router.push('/index/home/recommend')
+              }
+              this.$message({
+                type: 'warning',
+                message: '登录信息已更改，请重新登录',
+                center: true,
+              });
+            }
+
+          })
+          .catch(error => {
+            this.loadingVisible = false
+            if(error.response && error.response.status === 401) {
+              this.$message({
+                showClose: true,
+                message: '登录失败，请检查用户名或口令是否正确！',
+                type: 'error'
+              })
+              return
+            }
+            outputError(this, error)
+          })
+    },
     updateInfoConfirm(){
       localStorage.setItem("mixLiveUpdate", this.mixLiveUpdate);
       this.updateInfo = !this.updateInfo;
@@ -236,8 +280,8 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        sessionStorage.removeItem("isLogin");
-        sessionStorage.removeItem("userInfo");
+        localStorage.removeItem("isLogin");
+        localStorage.removeItem("userInfo");
         this.isLogin = 'false'
         this.userInfo = {}
         if (window.document.location.pathname == '/index/home/follows'){
@@ -267,14 +311,14 @@ export default {
       let _this = this
       this.userInfo = userInfo
       this.isLogin = 'true'
-      sessionStorage.setItem('userInfo', JSON.stringify(this.userInfo))
-      sessionStorage.setItem('isLogin', this.isLogin)
+      localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
+      localStorage.setItem('isLogin', this.isLogin)
       _this.$emit("loginSuccess",userInfo)
     },
     changeBan(userInfo){
       let _this = this
       this.userInfo = userInfo
-      sessionStorage.setItem('userInfo', JSON.stringify(this.userInfo))
+      localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
     },
     handleLogin(result, userInfo){
       if(result == "success"){
@@ -308,7 +352,7 @@ export default {
               let data = response.data
               if(data.code == 200){
                 this.userInfo = data.data
-                sessionStorage.setItem('userInfo', JSON.stringify(this.userInfo))
+                localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
                 this.$notify({
                   title: '成功',
                   message: "信息修改成功",
@@ -342,8 +386,8 @@ export default {
                     offset: 50,
                   });
                   this.dialogPasswordVisible = false
-                  sessionStorage.removeItem("isLogin");
-                  sessionStorage.removeItem("userInfo");
+                  localStorage.removeItem("isLogin");
+                  localStorage.removeItem("userInfo");
                   this.isLogin = 'false'
                   this.userInfo = {}
                   this.$router.push('/index/home/recommend')
@@ -380,13 +424,14 @@ export default {
     if (localStorage.getItem("mixLiveUpdate") != this.mixLiveUpdate) {
       this.updateInfo = true;
     }
-    if (sessionStorage.getItem('userInfo')) {
-      this.userInfo = JSON.parse(sessionStorage.getItem('userInfo'))
+    if (localStorage.getItem('userInfo')) {
+      this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
+      this.doLogin(this.userInfo.userName, this.userInfo.password)
     }
-    if (sessionStorage.getItem('isLogin')) {
-      this.isLogin = sessionStorage.getItem('isLogin')
+    if (localStorage.getItem('isLogin')) {
+      this.isLogin = localStorage.getItem('isLogin')
     }
-    if (!sessionStorage.getItem('localBanInfo')) {
+    if (!localStorage.getItem('localBanInfo')) {
       let banObj = {
         isActived: "0",
         allContent: "",
@@ -396,7 +441,7 @@ export default {
         huyaLevel: "1",
         ccLevel: "1",
       }
-      sessionStorage.setItem('localBanInfo', JSON.stringify(banObj));
+      localStorage.setItem('localBanInfo', JSON.stringify(banObj));
     }
   }
 }

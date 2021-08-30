@@ -64,6 +64,8 @@ export default {
           userApi(this.loginForm.username, md5(this.loginForm.password))
               .then(response => {
                 if(response.data.code === 200){
+                  let info = response.data.data
+                  info.password = md5(this.loginForm.password)
                   this.loginForm.username = ''
                   this.loginForm.password = ''
                   _this.$emit("loginResult", "success", response.data.data)
