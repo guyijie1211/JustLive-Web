@@ -1,10 +1,14 @@
 ![image-20210524192657052](https://github.com/guyijie1211/MixLive-vue/blob/master/pic/image-20210524192657052.png)
 
-# MixLive-vue
+# JustLive-Web
 
 :tv:一个整合国内多个直播平台内容的网站，基于vue.js开发。
 
-后端项目地址    [MixLive](https://github.com/guyijie1211/MixLive)
+此项目为JustLive Web端💻
+
+ 📱 Android版 [JustLive-Android](https://github.com/guyijie1211/JustLive-Android)
+
+后端项目地址    [JustLive-Api](https://github.com/guyijie1211/JustLive-Api)
 
 网站页面   &#x1F449; [live.yj1211.work](http://live.yj1211.work) &#x1F448;
 
