@@ -105,4 +105,9 @@ export const getTv = () =>
         url: '/api/live/getTv',
         method: 'GET',
     })
+export const getApp = () =>
+    request({
+        url: '/api/live/versionUpdate',
+        method: 'GET',
+    })
 
