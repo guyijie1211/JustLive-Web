@@ -2,7 +2,7 @@
   <el-container style="height: 100%; width: 100%">
     <el-header class="home-header" style="height: 50px">
       <div class="home-head-search-bar">
-        <div class="logo" @click="toMain()">Live</div>
+        <div class="logo" @click="toMain()">JustLive</div>
         <div v-if="showSearch">
           <el-input
               class="head-search"
@@ -11,6 +11,17 @@
           </el-input>
           <el-button class="search-btn" icon="el-icon-search" circle @click="submitKw()" size="small"></el-button>
         </div>
+        <el-dropdown class="head-download-app">
+          <div >
+            安卓APP下载
+          </div>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item><el-image
+                :src="appUrl"
+                :fit="fit"></el-image>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
         <div class="user-info">
           <div v-if="isLogin == 'true'" class="user-info-in">
             <el-dropdown @command="handleCommand">
@@ -163,6 +174,8 @@
 import md5 from 'js-md5';
 import Login from "@/components/Login/Login";
 import {changePassword, changeUserInfo, userApi} from "@/api/UserApi";
+import {getApp} from "@/api/liveList";
+
 import {outputError} from "@/utils/exception";
 
 export default {
@@ -192,6 +205,7 @@ export default {
     }
     return {
       mixLiveUpdate: "2021083001",
+      appUrl:"",
       player: null,
       isActive: false,
       searchInput: '',
@@ -262,6 +276,15 @@ export default {
     updateInfoConfirm(){
       localStorage.setItem("mixLiveUpdate", this.mixLiveUpdate);
       this.updateInfo = !this.updateInfo;
+    },
+    getAppUrl() {
+      getApp()
+        .then(response => {
+          if(response.data.code === 200){
+            let info = response.data.data
+            this.appUrl = info.apkMD5
+          }
+        })
     },
     toMain(){
       this.$router.push('/index/home/recommend')
@@ -421,6 +444,7 @@ export default {
     },
   },
   created() {
+    this.getAppUrl()
     if (localStorage.getItem("mixLiveUpdate") != this.mixLiveUpdate) {
       this.updateInfo = true;
     }
@@ -480,6 +504,18 @@ export default {
   left: 10px;
   font-weight: bold;
   font-size: 30px;
+}
+.head-download-app{
+  cursor: pointer;
+  position: absolute;
+  top: 12px;
+  left: 150px;
+  font-size: 18px;
+  font-weight: 600;
+  transition: all 0.1s;
+}
+.head-download-app:hover{
+  transform: scale(1.2);
 }
 .user-info{
   position: absolute;
