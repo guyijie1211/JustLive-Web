@@ -24,6 +24,19 @@
           <div class="home-aside-item-icon"><i class="iconfont icon-dianshi2"></i></div>
           <div class="home-aside-item-words">电视</div>
         </router-link>
+        <div class="head-download-app" @click="toGithub()">
+          <el-dropdown >
+            <div >
+              安卓APP下载
+            </div>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item><el-image
+                  :src="appUrl"
+                  :fit="fit"></el-image>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
         <div class="home-aside-bottom" @click="toGithub()">
           <div class="home-aside-bottom-words">问题反馈</div>
 <!--          <div class="home-aside-bottom-icon"><i class="el-icon-chat-line-square"></i></div>-->
@@ -42,6 +55,8 @@
 
 <script>
 
+import {getApp} from "@/api/liveList";
+
 export default {
   name: 'Home',
   components: {
@@ -50,6 +65,7 @@ export default {
   props: ['userInfo','isLogin'],
   data() {
     return {
+      appUrl:"",
       player: null,
       isActive: false,
       searchInput: '',
@@ -63,6 +79,15 @@ export default {
     },
     load(){
       this.$refs.mychild.loadRoomList();
+    },
+    getAppUrl() {
+      getApp()
+          .then(response => {
+            if(response.data.code === 200){
+              let info = response.data.data
+              this.appUrl = info.apkMD5
+            }
+          })
     },
     loginSuccess(userInfo){
       let _this = this
@@ -127,6 +152,9 @@ export default {
   activated() {
     console.log("activated")
     document.addEventListener('scroll', this.handleScroll, true);
+  },
+  created() {
+    this.getAppUrl()
   },
   deactivated() {
     console.log("deactivated")
@@ -213,6 +241,19 @@ a {
 .home-main::-webkit-scrollbar-thumb {
   border-radius: 10px;
   background: #8e8e8e;
+}
+.head-download-app{
+  width: 100%;
+  position:absolute;
+  bottom: 100px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: lighter;
+  transition: all 0.1s;
+}
+.head-download-app:hover{
+  transform: scale(1.2);
 }
 .beside-aside{
   position: absolute;
