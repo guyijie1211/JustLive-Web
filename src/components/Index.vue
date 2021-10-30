@@ -11,24 +11,37 @@
           </el-input>
           <el-button class="search-btn" icon="el-icon-search" circle @click="submitKw()" size="small"></el-button>
         </div>
-        <el-dropdown class="head-download-app">
-          <div >
-            安卓APP下载
-          </div>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item><el-image
-                :src="appUrl"
-                :fit="fit"></el-image>
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
+
+        <div class="top-follow">
+          <el-dropdown trigger="click" placement="bottom-start" >
+            <div>关注列表</div>
+            <el-dropdown-menu class="top-follow-menu" slot="dropdown">
+              <el-dropdown-item @click.native="selectArea(areaInfo)" v-for="(owner, index) in roomListOn" :key="index">
+                <el-card @click.native="toRoom(owner.platForm, owner.roomId)" class="search-result-card" shadow="hover">
+                  <div class="search-result-card-head">
+                    <img class="search-head-pic" :src=owner.ownerHeadPic />
+                  </div>
+                  <div class="search-result-card-right">
+                    <div class="result-name">
+                      {{ owner.ownerName }}
+                    </div>
+                    <div>
+                      <div :class="isLive(owner.isLive) ? 'info-isLive' : 'info-notLive'">{{ isLive(owner.isLive) ? "直播中" : "未开播" }}</div>
+                    </div>
+                  </div>
+                </el-card>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
+
         <div class="user-info">
           <div v-if="isLogin == 'true'" class="user-info-in">
-            <el-dropdown @command="handleCommand">
+            <el-dropdown @command="handleCommand" >
               <div class="el-dropdown-link">
                 {{ userInfo.nickName }}<i class="el-icon-arrow-down el-icon--right"></i>
               </div>
-              <el-dropdown-menu slot="dropdown">
+              <el-dropdown-menu slot="dropdown" >
                 <el-dropdown-item command="changeInfo">信息修改</el-dropdown-item>
                 <el-dropdown-item command="changePassword">修改密码</el-dropdown-item>
                 <el-dropdown-item command="logOut" divided>注销</el-dropdown-item>
@@ -104,7 +117,12 @@
         center>
       <div class="update-info-timeline">
         <el-timeline>
-          <el-timeline-item timestamp="2021/08/30" placement="top" color='#0bbd87'>
+          <el-timeline-item timestamp="2021/10/30" placement="top" color='#0bbd87'>
+            <el-card>
+              <p>+顶栏增加关注列表查看</p>
+            </el-card>
+          </el-timeline-item>
+          <el-timeline-item timestamp="2021/08/30" placement="top" >
             <el-card>
               <p>+记忆登录状态</p>
             </el-card>
@@ -174,9 +192,9 @@
 import md5 from 'js-md5';
 import Login from "@/components/Login/Login";
 import {changePassword, changeUserInfo, userApi} from "@/api/UserApi";
-import {getApp} from "@/api/liveList";
 
 import {outputError} from "@/utils/exception";
+import {getRoomsOn} from "@/api/liveList";
 
 export default {
   name: 'Index',
@@ -204,8 +222,8 @@ export default {
       }
     }
     return {
-      mixLiveUpdate: "2021083001",
-      appUrl:"",
+      roomListOn: [],
+      mixLiveUpdate: "2021103001",
       player: null,
       isActive: false,
       searchInput: '',
@@ -235,6 +253,33 @@ export default {
     }
   },
   methods: {
+    isLive(isLive){
+      if (isLive == "0"){
+        return false
+      }else {
+        return true
+      }
+    },
+    toRoom(platform, roomId){
+      this.$router.push({ name: 'liveRoom', query:{ platform : platform, roomId : roomId } });
+    },
+    getPlatform(platForm){
+      if (platForm == 'bilibili'){
+        return '哔哩哔哩'
+      }
+      if (platForm == 'douyu'){
+        return '斗鱼'
+      }
+      if (platForm == 'huya'){
+        return '虎牙'
+      }
+      if (platForm == 'cc'){
+        return '网易CC'
+      }
+      if (platForm == 'egame'){
+        return '企鹅电竞'
+      }
+    },
     doLogin(userName, password) {
       let _this = this
       userApi(userName, password)
@@ -277,15 +322,6 @@ export default {
       localStorage.setItem("mixLiveUpdate", this.mixLiveUpdate);
       this.updateInfo = !this.updateInfo;
     },
-    getAppUrl() {
-      getApp()
-        .then(response => {
-          if(response.data.code === 200){
-            let info = response.data.data
-            this.appUrl = info.apkMD5
-          }
-        })
-    },
     toMain(){
       this.$router.push('/index/home/recommend')
     },
@@ -296,6 +332,25 @@ export default {
         this.searchInput = ''
         this.$router.push({ name: 'search', query:{ keyWord : searchInput } })
       }
+    },
+    initRoomList(uid){
+      getRoomsOn(uid)
+          .then(response => {
+            if (response.data.code == 200){
+              let roomListTemp = response.data.data
+              console.log(uid)
+              let roomInfo
+              for (let i = 0; i < roomListTemp.length; i++){
+                roomInfo = roomListTemp[i]
+                if (roomInfo.isLive == 1){
+                  this.roomListOn.push(roomInfo)
+                  console.log(roomInfo)
+                }
+              }
+              this.roomList = this.roomListOn
+            }
+            this.loading = false
+          })
     },
     logOutConfirm() {
       this.$confirm('是否要退出登录?', '注销', {
@@ -337,6 +392,7 @@ export default {
       localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
       localStorage.setItem('isLogin', this.isLogin)
       _this.$emit("loginSuccess",userInfo)
+      this.initRoomList(userInfo.uid)
     },
     changeBan(userInfo){
       let _this = this
@@ -444,7 +500,6 @@ export default {
     },
   },
   created() {
-    this.getAppUrl()
     if (localStorage.getItem("mixLiveUpdate") != this.mixLiveUpdate) {
       this.updateInfo = true;
     }
@@ -505,22 +560,41 @@ export default {
   font-weight: bold;
   font-size: 30px;
 }
-.head-download-app{
-  cursor: pointer;
-  position: absolute;
-  top: 12px;
-  left: 150px;
-  font-size: 18px;
-  font-weight: 600;
-  transition: all 0.1s;
-}
-.head-download-app:hover{
-  transform: scale(1.2);
-}
 .user-info{
   position: absolute;
   top: 12px;
   right: 20px;
+}
+.search-head-pic{
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+}
+.result-follows{
+  position: absolute;
+  top: 50px;
+  width: 200px;
+  font-weight: normal;
+  font-size: 13px;
+}
+.result-name{
+  text-overflow: ellipsis;
+  line-height: 30px;
+  height: 30px;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 130px;
+}
+.top-follow{
+  font-size: 20px;
+  position: absolute;
+  top: 9px;
+  right: 150px;
+  transition: all 0.1s;
+}
+.top-follow:hover {
+  cursor: pointer;
+  transform: scale(1.2);
 }
 .to-login{
   cursor: pointer;
@@ -546,6 +620,29 @@ export default {
 .el-input /deep/ .el-input__inner{
   width: 250px;
 }
+.search-result-card{
+  height: 60px;
+  width: 100%;
+  position: relative;
+  transition: all 0.2s;
+  margin-bottom: 10px;
+}
+.search-result-card:hover{
+  cursor: pointer;
+  transform: scale(1.1);
+}
+.search-result-card-right{
+  position: absolute;
+  top: 0px;
+  left: 60px;
+}
+.search-result-card-head{
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  height: 50px;
+  width: 50px;
+}
 .search-btn{
   margin-left: 10px;
 }
@@ -559,8 +656,46 @@ export default {
   width: 5px;
   /*height: 4px;*/
 }
+.top-follow-menu{
+  overflow: auto;
+  max-height: 600px;
+  width: 250px;
+}
+.top-follow-menu::-webkit-scrollbar {
+  width: 8px;
+  /*height: 4px;*/
+}
+.top-follow-menu::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #8e8e8e;
+}
 .update-info-timeline::-webkit-scrollbar-thumb {
   border-radius: 10px;
   background: #8e8e8e;
+}
+.info-isLive{
+  margin-right: 5px;
+  float: left;
+  height: 18px;
+  line-height: 18px;
+  width: 45px;
+  background-color: #c10f0f;
+  border-radius: 2px;
+  font-size: 2px;
+  text-align: center;
+  color: #F3F6F8;
+}
+.info-notLive{
+  margin-top: 6px;
+  margin-right: 5px;
+  float: left;
+  height: 18px;
+  width: 45px;
+  background-color: #979797;
+  border-radius: 2px;
+  font-size: 5px;
+  font-weight: 600;
+  text-align: center;
+  color: #F3F6F8;
 }
 </style>
