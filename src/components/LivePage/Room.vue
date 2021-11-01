@@ -10,7 +10,7 @@
     </el-dialog>
     <div class="room-left">
       <div v-if="isLive()" class="room-left-video">
-        <ArtPlayerTest v-if="isLive()" class="room-left-video-play" @notSupport="notSupport"
+        <ArtPlayerTest ref="childPlayer" v-if="isLive()" class="room-left-video-play" @notSupport="notSupport"
                        @newDanmuSend="newDanmuSend" :platform="platform" :room-id="roomId"
                        :is-live="isLive" :ban-active="banActive" :ban-level="banLevel"
                        :ban-content-list="banContentList" :checked-content-list="checkedContentList"
@@ -589,6 +589,11 @@ export default {
             }
           })
     },
+    '$route' (to, from) { //监听路由是否变化
+      if(to.query.roomId != from.query.roomId){
+        this.$router.go(0);
+      }
+    }
   },
   beforeDestroy(){
     document.removeEventListener("scroll", this.handleScroll, true);

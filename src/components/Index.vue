@@ -11,11 +11,11 @@
           </el-input>
           <el-button class="search-btn" icon="el-icon-search" circle @click="submitKw()" size="small"></el-button>
         </div>
-
         <div class="top-follow">
-          <el-dropdown trigger="click" placement="bottom-start" >
+          <el-dropdown trigger="click" placement="bottom-end" @visible-change = "refreshRoomList()">
             <div>关注列表</div>
             <el-dropdown-menu class="top-follow-menu" slot="dropdown">
+              <el-dropdown-item v-if="showFollowLoading" v-loading="topFollowLoading" style="height: 80px;"></el-dropdown-item>
               <el-dropdown-item @click.native="selectArea(areaInfo)" v-for="(owner, index) in roomListOn" :key="index">
                 <el-card @click.native="toRoom(owner.platForm, owner.roomId)" class="search-result-card" shadow="hover">
                   <div class="search-result-card-head">
@@ -34,7 +34,6 @@
             </el-dropdown-menu>
           </el-dropdown>
         </div>
-
         <div class="user-info">
           <div v-if="isLogin == 'true'" class="user-info-in">
             <el-dropdown @command="handleCommand" >
@@ -184,7 +183,6 @@
     <el-button type="primary" @click="updateInfoConfirm()">了 解</el-button>
   </span>
     </el-dialog>
-
   </el-container>
 </template>
 
@@ -222,6 +220,8 @@ export default {
       }
     }
     return {
+      topFollowLoading: true,
+      showFollowLoading:false,
       roomListOn: [],
       mixLiveUpdate: "2021103001",
       player: null,
@@ -333,7 +333,12 @@ export default {
         this.$router.push({ name: 'search', query:{ keyWord : searchInput } })
       }
     },
+    refreshRoomList(){
+      this.roomListOn = []
+      this.initRoomList(this.userInfo.uid)
+    },
     initRoomList(uid){
+      this.showFollowLoading = true
       getRoomsOn(uid)
           .then(response => {
             if (response.data.code == 200){
@@ -349,6 +354,7 @@ export default {
               }
               this.roomList = this.roomListOn
             }
+            this.showFollowLoading = false
             this.loading = false
           })
     },
@@ -392,7 +398,6 @@ export default {
       localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
       localStorage.setItem('isLogin', this.isLogin)
       _this.$emit("loginSuccess",userInfo)
-      this.initRoomList(userInfo.uid)
     },
     changeBan(userInfo){
       let _this = this
@@ -589,7 +594,7 @@ export default {
   font-size: 20px;
   position: absolute;
   top: 9px;
-  right: 150px;
+  right: 250px;
   transition: all 0.1s;
 }
 .top-follow:hover {
@@ -607,6 +612,10 @@ export default {
 }
 .el-dropdown-link{
   cursor: pointer;
+  max-width: 150px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
   font-size: 18px;
   font-weight: 600;
   transition: all 0.2s;
