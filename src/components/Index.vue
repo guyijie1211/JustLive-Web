@@ -6,7 +6,7 @@
         <div v-if="showSearch">
           <el-input
               class="head-search"
-              placeholder="搜索主播"
+              placeholder="搜索主播(斗鱼用房间号)"
               v-model="searchInput">
           </el-input>
           <el-button class="search-btn" icon="el-icon-search" circle @click="submitKw()" size="small"></el-button>
