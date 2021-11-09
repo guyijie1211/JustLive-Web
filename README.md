@@ -10,6 +10,8 @@
 
 后端项目地址    [JustLive-Api](https://github.com/guyijie1211/JustLive-Api)
 
+QQ交流群：645962588
+
 网站页面   &#x1F449; [live.yj1211.work](http://live.yj1211.work) &#x1F448;
 
 #### 功能
