@@ -2,6 +2,9 @@
   <el-row id="recommend-room-row" :gutter="20" class="recommend-room-row">
       <el-col class="recommend-room-col" :xs="20" :sm="10" :md="8" :lg="6" :xl="6" v-for="(room, index) in roomList" :key="index">
         <el-card @click.native="toRoom(room.platForm, room.roomId)" shadow="hover" class="recommend-room-card">
+          <div class="new-tab" @click.stop="newToRoom(room.platForm, room.roomId)">
+            <el-tooltip content="点击在新标签页中打开" placement="right-start"><i class="el-icon-position"></i></el-tooltip>
+          </div>
             <div class="recommend-room-pic">
               <div class="pic-bottom">
                 <div class="pic-bottom-area">
@@ -46,6 +49,11 @@ export default {
     }
   },
   methods: {
+    //新标签页打开
+    newToRoom(platform, roomId){
+      let route = this.$router.resolve({ name: 'liveRoom', query:{ platform : platform, roomId : roomId } });
+      window.open(route.href, '_blank')
+    },
     toRoom(platform, roomId){
       this.$router.push({ name: 'liveRoom', query:{ platform : platform, roomId : roomId } });
     },
@@ -110,6 +118,19 @@ export default {
 }
 .recommend-room-col:hover{
   height: 170px;
+}
+.new-tab{
+  font-size: 25px;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 10;
+  color: red;
+  cursor: pointer;
+  display: none;
+}
+.recommend-room-card:hover .new-tab{
+  display: inline;
 }
 .recommend-room-card{
   margin:0 auto;
