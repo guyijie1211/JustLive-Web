@@ -18,19 +18,21 @@
             <el-dropdown-menu class="top-follow-menu" slot="dropdown">
               <el-dropdown-item v-if="showFollowLoading" v-loading="topFollowLoading" style="height: 80px;"></el-dropdown-item>
               <el-dropdown-item @click.native="selectArea(areaInfo)" v-for="(owner, index) in roomListOn" :key="index">
-                <el-card @click.native="toRoom(owner.platForm, owner.roomId)" class="search-result-card" shadow="hover">
-                  <div class="search-result-card-head">
-                    <img class="search-head-pic" :src=owner.ownerHeadPic />
-                  </div>
-                  <div class="search-result-card-right">
-                    <div class="result-name">
-                      {{ owner.ownerName }}
+                <router-link :to="{path:'/index/liveRoom',query:{ platform : owner.platForm, roomId : owner.roomId }}" :target="openBlank()">
+                  <el-card  class="search-result-card" shadow="hover">
+                    <div class="search-result-card-head">
+                      <img class="search-head-pic" :src=owner.ownerHeadPic />
                     </div>
-                    <div>
-                      <div :class="isLive(owner.isLive) ? 'info-isLive' : 'info-notLive'">{{ isLive(owner.isLive) ? "直播中" : "未开播" }}</div>
+                    <div class="search-result-card-right">
+                      <div class="result-name">
+                        {{ owner.ownerName }}
+                      </div>
+                      <div>
+                        <div :class="isLive(owner.isLive) ? 'info-isLive' : 'info-notLive'">{{ isLive(owner.isLive) ? "直播中" : "未开播" }}</div>
+                      </div>
                     </div>
-                  </div>
-                </el-card>
+                  </el-card>
+                </router-link>
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -261,6 +263,13 @@ export default {
         return true
       }
     },
+    openBlank(){
+      if (localStorage.getItem("blankValue") == "true") {
+        return "_blank"
+      } else {
+        return "_self"
+      }
+    },
     toRoom(platform, roomId){
       this.$router.push({ name: 'liveRoom', query:{ platform : platform, roomId : roomId } });
     },
@@ -327,7 +336,6 @@ export default {
       this.$router.push('/index/home/recommend')
     },
     submitKw(){
-      console.log("enter")
       if(this.searchInput.trim()!=''){
         let searchInput = this.searchInput
         this.showSearch = false
@@ -345,13 +353,11 @@ export default {
           .then(response => {
             if (response.data.code == 200){
               let roomListTemp = response.data.data
-              console.log(uid)
               let roomInfo
               for (let i = 0; i < roomListTemp.length; i++){
                 roomInfo = roomListTemp[i]
                 if (roomInfo.isLive == 1){
                   this.roomListOn.push(roomInfo)
-                  console.log(roomInfo)
                 }
               }
               this.roomList = this.roomListOn
@@ -460,7 +466,6 @@ export default {
     submitPassword(){
       this.$refs['userPasswordForm'].validate((valid) => {
         if (valid) {
-          console.log(this.userInfo.userName)
           changePassword(this.userInfo.userName, md5(this.formPassword.oldPassword), md5(this.formPassword.newPassword))
               .then(response => {
                 let data = response.data

@@ -1,7 +1,15 @@
 <template>
   <el-row id="recommend-room-row" :gutter="20" class="recommend-room-row">
-      <el-col class="recommend-room-col" :xs="20" :sm="10" :md="8" :lg="6" :xl="6" v-for="(room, index) in roomList" :key="index">
-        <el-card @click.native="toRoom(room.platForm, room.roomId)" shadow="hover" class="recommend-room-card">
+    <el-switch
+        class="blank-switch"
+        v-model="blankValue"
+        inactive-text="新标签打开直播间"
+        @change="blankChange">
+    </el-switch>
+
+    <el-col class="recommend-room-col" :xs="20" :sm="10" :md="8" :lg="6" :xl="6" v-for="(room, index) in roomList" :key="index">
+        <router-link :to="{path:'/index/liveRoom',query:{ platform : room.platForm, roomId : room.roomId }}" :target="openBlank()">
+          <el-card  shadow="hover" class="recommend-room-card">
             <div class="recommend-room-pic">
               <div class="pic-bottom">
                 <div class="pic-bottom-area">
@@ -28,6 +36,7 @@
               </div>
             </div>
           </el-card>
+        </router-link>
       </el-col>
       <div class="roomList-load" v-loading="loading" element-loading-background="rgba(255, 255, 255, 0.8)">
     </div>
@@ -40,6 +49,7 @@ export default {
   props: ['roomList'],
   data() {
     return {
+      blankValue: true,
       loading: false,
       fit: "cover",
       colNum: 6,
@@ -82,8 +92,19 @@ export default {
         return num+'人'
       }
     },
+    openBlank(){
+      if (this.blankValue) {
+        return "_blank"
+      } else {
+        return "_self"
+      }
+    },
+    blankChange(value){
+      localStorage.setItem("blankValue", value)
+    }
   },
   mounted() {
+    this.blankValue = localStorage.getItem("blankValue") == "true"
     // window.onresize = function(){
     //   let _this = this;
     //   let width = document.getElementById("recommend-room-row").offsetWidth;
@@ -103,7 +124,7 @@ export default {
   /*float: left;*/
 }
 .recommend-room-col{
-  margin-top: 25px;
+  margin-top: 30px;
   /*margin-left: 30px;*/
   height: 170px;
   /*float: left;*/
@@ -226,6 +247,11 @@ export default {
   font-size: small;
   float: left;
   margin-left: 10px;
+}
+.blank-switch{
+  position: absolute;
+  top: 0px;
+  right: 5%;
 }
 .card-enter{
   margin-top: 100px;
