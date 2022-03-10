@@ -348,7 +348,6 @@ export default {
         msg: text
       }
       _this.$emit("newDanmuSend", newDanmu)
-      console.log(this.danmaku.comments.length)
       if (this.danmuNumStep > 0) {
         this.danmuNumStep --
         return

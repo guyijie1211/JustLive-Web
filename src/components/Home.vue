@@ -32,7 +32,7 @@
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item><el-image
                   :src="appUrl"
-                  :fit="fit"></el-image>
+                  fit="fit"></el-image>
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
