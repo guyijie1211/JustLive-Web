@@ -7,7 +7,8 @@
           <el-input
               class="head-search"
               placeholder="搜索主播(斗鱼用房间号)"
-              v-model="searchInput">
+              v-model="searchInput"
+              @keydown.enter.native="submitKw()">
           </el-input>
           <el-button class="search-btn" icon="el-icon-search" circle @click="submitKw()" size="small"></el-button>
         </div>
@@ -326,6 +327,7 @@ export default {
       this.$router.push('/index/home/recommend')
     },
     submitKw(){
+      console.log("enter")
       if(this.searchInput.trim()!=''){
         let searchInput = this.searchInput
         this.showSearch = false

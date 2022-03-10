@@ -9,7 +9,7 @@
             :value="item.value">
         </el-option>
       </el-select>
-      <el-input size="middle" class="search-bar-input" v-model="keyWord"></el-input>
+      <el-input size="middle" class="search-bar-input" v-model="keyWord" @keydown.enter.native="toSearch"></el-input>
       <el-button class="search-bar-btn" type="primary" @click="toSearch">搜索</el-button>
     </div>
     <div class="search-result">
