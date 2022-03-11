@@ -119,7 +119,14 @@
         center>
       <div class="update-info-timeline">
         <el-timeline>
-          <el-timeline-item timestamp="2021/10/30" placement="top" color='#0bbd87'>
+          <el-timeline-item timestamp="2022/3/10" placement="top" color='#0bbd87'>
+            <el-card>
+              <p>+增加搜索栏回车搜索</p>
+              <p>+增加新标签页打开直播间</p>
+              <p style="color: #c10f0f">Chromium内核的浏览器，如果在新标签页打开直播间时不能自动播放，需要在浏览器设置中打开媒体自动播放</p>
+            </el-card>
+          </el-timeline-item>
+          <el-timeline-item timestamp="2021/10/30" placement="top">
             <el-card>
               <p>+顶栏增加关注列表查看</p>
             </el-card>
@@ -226,7 +233,7 @@ export default {
       topFollowLoading: true,
       showFollowLoading:false,
       roomListOn: [],
-      mixLiveUpdate: "2021103001",
+      mixLiveUpdate: "2022031002",
       player: null,
       isActive: false,
       searchInput: '',
