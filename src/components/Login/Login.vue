@@ -4,7 +4,7 @@
       <el-form :model="loginForm" :rules="rules" ref="loginForm" autoComplete="on" label-position="left">
         <div class="login-content">
           <el-form-item prop="username">
-            <el-input placeholder="用户名" prefix-icon="el-icon-user" v-model="loginForm.username" autoComplete="on" autofocus="autofocus" @focus="clearValidate"></el-input>
+            <el-input placeholder="用户名/邮箱" prefix-icon="el-icon-user" v-model="loginForm.username" autoComplete="on" autofocus="autofocus" @focus="clearValidate"></el-input>
           </el-form-item>
           <el-form-item prop="password">
             <el-input type="password" placeholder="密码" prefix-icon="el-icon-lock" v-model="loginForm.password" @keyup.enter.native="doLogin"></el-input>
@@ -13,17 +13,20 @@
           <el-button class="login-button" type="primary" :loading="loadingVisible" @click.native.prevent="doLogin">登录</el-button>
         </div>
         <div class="login-footer">
-          <a class="register-class" href="#" @click="openRegisterDialog()">没有账号，立即注册</a>
+          <a class="register-class" href="#" @click="openRegisterDialog()">立即注册</a>
+          <a class="forget-class" href="#" @click="openForgetDialog()">忘记密码</a>
         </div>
       </el-form>
     </div>
     <Register  ref="registerUser" @onRegisterSuccessed="onRegisterSuccessed"></Register>
+    <Forget  ref="forgetPassword"></Forget>
   </div>
 </template>
 
 <script>
 import {outputError} from "@/utils/exception";
 import Register from "@/components/Login/Register";
+import Forget from "@/components/Login/Forget";
 import {userApi} from "@/api/UserApi";
 import md5 from 'js-md5';
 
@@ -50,6 +53,9 @@ export default {
     },
     openRegisterDialog() {
       this.$refs.registerUser.$emit('openDialog')
+    },
+    openForgetDialog() {
+      this.$refs.forgetPassword.$emit('openDialogForget')
     },
     onRegisterSuccessed(username, password) {
       this.loginForm.username = username
@@ -101,7 +107,8 @@ export default {
     },
   },
   components: {
-    Register
+    Register,
+    Forget
   }
 }
 </script>
@@ -156,5 +163,9 @@ a:hover{
 .register-class{
   margin-top: 10px;
   margin-left: 10px;
+}
+.forget-class{
+  margin-top: 10px;
+  margin-left: 30px;
 }
 </style>

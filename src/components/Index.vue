@@ -45,6 +45,7 @@
               </div>
               <el-dropdown-menu slot="dropdown" >
                 <el-dropdown-item command="changeInfo">信息修改</el-dropdown-item>
+                <el-dropdown-item command="bindMail">绑定邮箱</el-dropdown-item>
                 <el-dropdown-item command="changePassword">修改密码</el-dropdown-item>
                 <el-dropdown-item command="logOut" divided>注销</el-dropdown-item>
               </el-dropdown-menu>
@@ -59,8 +60,7 @@
     <keep-alive include="Home">
       <router-view @exitSearch="exitSearch" @inSearch="inSearch" @loginSuccess="loginSuccess" @changeBan="changeBan" :isLogin="isLogin" :userInfo="userInfo"></router-view>
     </keep-alive>
-    <el-dialog
-        title="登录"
+    <el-dialog title="登录"
         :visible.sync="dialogVisibleIndex"
         width="450px"
         height="200px"
@@ -86,6 +86,7 @@
         <el-button size="small" type="primary" @click="submit()">确 定</el-button>
       </div>
     </el-dialog>
+    <BindMail :userInfo="userInfo"  ref="bindMail"></BindMail>
     <el-dialog title="修改密码"
                width="440px"
                :visible.sync="dialogPasswordVisible"
@@ -109,8 +110,7 @@
         <el-button size="small" type="primary" @click="submitPassword()">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog
-        title="更新日志"
+    <el-dialog title="更新日志"
         :visible.sync="updateInfo"
         width="40%"
         :show-close="false"
@@ -192,6 +192,7 @@
 <script>
 import md5 from 'js-md5';
 import Login from "@/components/Login/Login";
+import BindMail from "@/components/Login/BindMail"
 import {changePassword, changeUserInfo, userApi} from "@/api/UserApi";
 
 import {outputError} from "@/utils/exception";
@@ -200,7 +201,7 @@ import {getRoomsOn} from "@/api/liveList";
 export default {
   name: 'Index',
   components: {
-    Login
+    Login,BindMail
   },
   data() {
     var validatePass = (rule, value, callback) => {
@@ -508,6 +509,10 @@ export default {
       }
       if(command == 'changePassword'){
         this.dialogPasswordVisible = true
+      }
+      if (command == 'bindMail'){
+        console.log(this.userInfo)
+        this.$refs.bindMail.$emit('openDialogBind')
       }
     },
   },
