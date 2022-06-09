@@ -15,6 +15,9 @@
       <el-form-item label="确认密码" prop="checkPassword">
         <el-col :span="16"><el-input type="password" :maxlength="16" v-model="userModel.checkPassword" auto-complete="off"></el-input></el-col>
       </el-form-item>
+      <el-form-item label="邮箱" prop="mail">
+        <el-col :span="16"><el-input ref="mail" v-model="userModel.mail" autofocus></el-input></el-col>
+      </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button size="small" @click="dialogVisible = false">取 消</el-button>
@@ -57,13 +60,14 @@ export default {
         name: '',
         nickname: '',
         password: '',
+        mail:'',
         checkPassword: '',
       },
       formRules: {
         name: [
           { required: true, message: '请输入用户名称', trigger: 'blur' },
           { min: 3, max: 32, message: '长度在 3 到 16 个字符', trigger: 'blur' }
-        ],        
+        ],
         nickname: [
           { required: true, message: '请输入昵称', trigger: 'blur' },
           { min: 3, max: 32, message: '长度在 3 到 16 个字符', trigger: 'blur' }
@@ -75,6 +79,9 @@ export default {
         checkPassword: [
           { validator: validatePass2, trigger: 'blur' }
         ],
+        mail: [
+          { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+        ]
       }      
     }
   },
@@ -88,7 +95,7 @@ export default {
       this.$refs['userForm'].validate((valid) => {
         if (valid) {
           this.loadingVisible = true
-          registerUser(this.userModel.name, this.userModel.nickname, md5(this.userModel.password))
+          registerUser(this.userModel.name, this.userModel.nickname, md5(this.userModel.password), this.userModel.mail)
           .then(response => {
             if(response.data.code === 200){
               this.loadingVisible = false

@@ -10,14 +10,15 @@ export const userApi = (username, password) =>
             password,
         })
     })
-export const registerUser = (username, nickname, password) =>
+export const registerUser = (username, nickname, password, mail) =>
     request({
         url: '/api/register',
         method: 'POST',
         data: qs.stringify({
             username,
             nickname,
-            password
+            password,
+            mail
         })
     })
 export const follow = (platform, roomId, uid) =>
@@ -54,5 +55,41 @@ export const changePassword = (userName, oldPassword, newPassword) =>
             userName: userName,
             oldPassword: oldPassword,
             newPassword: newPassword,
+        }
+    })
+export const changePasswordByMail = (mail, newPassword) =>
+    request({
+        url: '/api/live/changePasswordByMail',
+        method: 'GET',
+        params: {
+            mail: mail,
+            newPassword: newPassword
+        }
+    })
+export const sendMail = (mail, code, action) =>
+    request({
+        url: '/api/live/sendMail',
+        method: 'GET',
+        params: {
+            mail: mail,
+            code: code,
+            action: action
+        }
+    })
+export const bindMail = (userName, mail) =>
+    request({
+        url: '/api/live/bindMail',
+        method: 'GET',
+        params: {
+            userName: userName,
+            mail: mail
+        }
+    })
+export const getBindMail = (uid) =>
+    request({
+        url: '/api/live/getBindMail',
+        method: 'GET',
+        params: {
+            uid: uid
         }
     })
