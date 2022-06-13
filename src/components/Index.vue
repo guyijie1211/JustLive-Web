@@ -119,7 +119,13 @@
         center>
       <div class="update-info-timeline">
         <el-timeline>
-          <el-timeline-item timestamp="2022/3/10" placement="top" color='#0bbd87'>
+          <el-timeline-item timestamp="2022/6/13" placement="top" color='#0bbd87'>
+            <el-card>
+              <p>+增加邮箱绑定，找回密码</p>
+              <p>+删除企鹅电竞入口</p>
+            </el-card>
+          </el-timeline-item>
+          <el-timeline-item timestamp="2022/3/10" placement="top">
             <el-card>
               <p>+增加搜索栏回车搜索</p>
               <p>+增加新标签页打开直播间</p>
@@ -234,7 +240,7 @@ export default {
       topFollowLoading: true,
       showFollowLoading:false,
       roomListOn: [],
-      mixLiveUpdate: "2022031002",
+      mixLiveUpdate: "2022061301",
       player: null,
       isActive: false,
       searchInput: '',
