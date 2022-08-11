@@ -24,7 +24,7 @@
           <div class="home-aside-item-icon"><i class="iconfont icon-dianshi2"></i></div>
           <div class="home-aside-item-words">电视</div>
         </router-link>
-        <div class="head-download-app" @click="toGithub()">
+        <div class="head-download-app" @click="toAndroidAppRelease()">
           <el-dropdown >
             <div >
               安卓APP下载
@@ -37,7 +37,7 @@
             </el-dropdown-menu>
           </el-dropdown>
         </div>
-        <div class="home-aside-bottom" @click="toGithub()">
+        <div class="home-aside-bottom" @click="toGithubIssuePage()">
           <div class="home-aside-bottom-words">问题反馈</div>
 <!--          <div class="home-aside-bottom-icon"><i class="el-icon-chat-line-square"></i></div>-->
         </div>
@@ -74,8 +74,11 @@ export default {
     }
   },
   methods: {
-    toGithub(){
-      window.open("https://github.com/guyijie1211/JustLive-Android/releases", "_blank");
+    toGithubIssuePage(){
+      window.open("https://github.com/guyijie1211/JustLive-Web/issues/new", "_blank");
+    },
+    toAndroidAppRelease(){
+      window.open("https://github.com/guyijie1211/JustLive-Android/releases");
     },
     load(){
       this.$refs.mychild.loadRoomList();
