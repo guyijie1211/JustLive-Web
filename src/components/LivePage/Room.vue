@@ -420,7 +420,6 @@ export default {
     },
     isLive(){
       let state = this.roomInfo.isLive
-      console.log(state)
       if (state == "0"){
         return false
       }else {
