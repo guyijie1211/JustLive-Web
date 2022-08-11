@@ -75,7 +75,7 @@ export default {
   },
   methods: {
     toGithub(){
-      window.open("https://github.com/guyijie1211/MixLive-vue/issues/new", "_blank");
+      window.open("https://github.com/guyijie1211/JustLive-Android/releases", "_blank");
     },
     load(){
       this.$refs.mychild.loadRoomList();
