@@ -13,7 +13,7 @@
           <el-button class="search-btn" icon="el-icon-search" circle @click="submitKw()" size="small"></el-button>
         </div>
         <div class="top-follow">
-          <el-dropdown trigger="click" placement="bottom-end" @visible-change = "refreshRoomList()">
+          <el-dropdown v-if="isLogin == 'true'" trigger="click" placement="bottom-end" @visible-change = "refreshRoomList()">
             <div>关注列表</div>
             <el-dropdown-menu class="top-follow-menu" slot="dropdown">
               <el-dropdown-item v-if="showFollowLoading" v-loading="topFollowLoading" style="height: 80px;"></el-dropdown-item>
@@ -28,7 +28,7 @@
                         {{ owner.ownerName }}
                       </div>
                       <div>
-                        <div :class="isLive(owner.isLive) ? 'info-isLive' : 'info-notLive'">{{ isLive(owner.isLive) ? "直播中" : "未开播" }}</div>
+                        <div :class="isLive(owner.isLive) ? 'info-isLive' : 'info-notLive'" style="font-size: small">{{ isLive(owner.isLive) ? "直播中" : "未开播" }}</div>
                       </div>
                     </div>
                   </el-card>
