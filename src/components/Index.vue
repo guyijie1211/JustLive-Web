@@ -96,13 +96,13 @@
           <el-input :disabled="true" v-model="userInfo.userName" readonly></el-input>
         </el-form-item>
         <el-form-item label="旧密码" prop="oldPassword">
-          <el-input v-model="formPassword.oldPassword" style="width: 100px"></el-input>
+          <el-input type="password" v-model="formPassword.oldPassword" style="width: 100px"></el-input>
         </el-form-item>
         <el-form-item label="新密码" prop="newPassword">
-          <el-input v-model="formPassword.newPassword" style="width: 100px"></el-input>
+          <el-input type="password" v-model="formPassword.newPassword" style="width: 100px"></el-input>
         </el-form-item>
         <el-form-item label="确认新密码" prop="checkNewPassword">
-          <el-input v-model="formPassword.checkNewPassword" style="width: 100px"></el-input>
+          <el-input type="password" v-model="formPassword.checkNewPassword" style="width: 100px"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
