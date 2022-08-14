@@ -28,7 +28,7 @@ QQ交流群：645962588
 
 ## 直播支持
 
-虎牙、斗鱼、BILIBILI直播、网易cc（cc暂无清晰度切换）、企鹅电竞
+虎牙、斗鱼、BILIBILI直播、网易cc（cc暂无清晰度切换）
 
 直播源获取参考	[wbt5/real-url](https://github.com/wbt5/real-url)
 
@@ -36,13 +36,14 @@ QQ交流群：645962588
 
 ## 弹幕支持(暂不支持弹幕发送)
 
-斗鱼、BILIBILI直播、虎牙、企鹅电竞
+斗鱼、BILIBILI直播、虎牙
 
 斗鱼弹幕协议参考	[斗鱼开放平台](https://open.douyu.com/source/api/63)
 
 BILIBILI直播弹幕协议参考	[lovelyyoshino/Bilibili-Live-API](https://github.com/lovelyyoshino/Bilibili-Live-API)
 
 ## 更新记录
+**2022/08/11**  因企鹅电竞关站，先已取消支持该直播源
 
 **2021/07/28**  更换弹幕插件, 优化弹幕体验
 

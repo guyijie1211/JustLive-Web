@@ -24,7 +24,7 @@
         </div>
         <div class="room-left-info-after-head">
           <div class="room-left-info-after-head-name">
-            <div :class="isLive() ? 'info-isLive' : 'info-notLive'">{{ isLive() ? "直播中" : "未开播" }}</div>{{ roomInfo.roomName }}
+            <div :class="isLive() ? 'info-isLive' : 'info-notLive'" style="font-size: small">{{ isLive() ? "直播中" : "未开播" }}</div>{{ roomInfo.roomName }}
           </div>
           <div class="room-left-info-after-head-owner">
             {{ getPlatform(platform) }} · {{ roomInfo.ownerName }}

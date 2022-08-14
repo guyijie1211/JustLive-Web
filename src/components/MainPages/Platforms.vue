@@ -13,7 +13,7 @@
     <router-link :to="{name: 'platformRoom', params: {platform: 'bilibili'}}">
       <el-col class="platform-col" :span="11">
         <div class="pic-div bilibili-pic-div">
-          <img class="bilibili-pic" src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=2124600341,1611607365&fm=15&gp=0.jpg">
+          <img class="bilibili-pic" src="../../../pic/bilibili-logo.png" height="50" width="120">
         </div>
         <div class="platform-info">
           <div class="platform-info-title">哔哩哔哩直播</div>

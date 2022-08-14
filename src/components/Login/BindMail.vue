@@ -70,7 +70,6 @@ export default {
       getBindMail(this.userInfo.uid)
           .then(response => {
             if(response.data.code === 200){
-              console.log(response)
               let mail = response.data.data
               if (mail == '') {
                 this.bindedMail = "无"
@@ -153,7 +152,6 @@ export default {
         if (valid) {
           this.loadingVisible = true
           let _this = this;
-          console.log(_this.userInfo.uid)
           bindMail(_this.userInfo.uid, this.userModel.mail)
               .then(response => {
                 if(response.data.code === 200){
