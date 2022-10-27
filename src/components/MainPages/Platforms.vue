@@ -1,55 +1,74 @@
 <template>
   <el-row class="platform-row" :gutter="20">
-    <router-link :to="{name: 'platformRoom', params: {platform: 'douyu'}}">
-      <el-col class="platform-col" :span="11">
+    <el-col :sm="{ span: 12 }"  class="el-col-item">
+      <router-link
+        class="platform-col"
+        :to="{ name: 'platformRoom', params: { platform: 'douyu' } }"
+      >
         <div class="pic-div douyu-pic-div">
-          <img class="douyu-pic" src="https://imgsrc.baidu.com/forum/pic/item/297a0bfc1e178a823f26bdc2e103738da977e81c.jpg">
+          <img
+            class="douyu-pic"
+            src="https://imgsrc.baidu.com/forum/pic/item/297a0bfc1e178a823f26bdc2e103738da977e81c.jpg"
+          />
         </div>
         <div class="platform-info">
           <div class="platform-info-title">斗鱼直播</div>
         </div>
-      </el-col>
-    </router-link>
-    <router-link :to="{name: 'platformRoom', params: {platform: 'bilibili'}}">
-      <el-col class="platform-col" :span="11">
+      </router-link>
+    </el-col>
+
+    <el-col :sm="{ span: 12 }"  class="el-col-item">
+      <router-link
+        class="platform-col"
+        :to="{ name: 'platformRoom', params: { platform: 'bilibili' } }"
+      >
         <div class="pic-div bilibili-pic-div">
-          <img class="bilibili-pic" src="../../../pic/bilibili-logo.png" height="50" width="120">
+          <img
+            class="bilibili-pic"
+            src="../../../pic/bilibili-logo.png"
+            height="50"
+            width="120"
+          />
         </div>
         <div class="platform-info">
-          <div class="platform-info-title">哔哩哔哩直播</div>
+          <div class="platform-info-title">哔哩直播</div>
         </div>
-      </el-col>
-    </router-link>
-    <router-link :to="{name: 'platformRoom', params: {platform: 'huya'}}">
-      <el-col class="platform-col" :span="11">
+      </router-link>
+    </el-col>
+
+    <el-col :sm="{ span: 12 }" class="el-col-item">
+      <router-link
+        class="platform-col"
+        :to="{ name: 'platformRoom', params: { platform: 'huya' } }"
+      >
         <div class="pic-div huya-pic-div">
-          <img class="huya-pic" src="https://imgsrc.baidu.com/forum/pic/item/902397dda144ad3469d79d09dea20cf430ad85d7.jpg">
+          <img
+            class="huya-pic"
+            src="https://imgsrc.baidu.com/forum/pic/item/902397dda144ad3469d79d09dea20cf430ad85d7.jpg"
+          />
         </div>
         <div class="platform-info">
           <div class="platform-info-title">虎牙直播</div>
         </div>
-      </el-col>
-    </router-link>
-<!--    <router-link :to="{name: 'platformRoom', params: {platform: 'egame'}}">-->
-<!--      <el-col class="platform-col" :span="11">-->
-<!--        <div class="pic-div egame-pic-div">-->
-<!--          <img class="egame-pic" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2F02.imgmini.eastday.com%2Fmobile%2F20180523%2F20180523124758_75665f0f034702de026b216cd60f0f87_7.jpeg&refer=http%3A%2F%2F02.imgmini.eastday.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1629363744&t=c44fc9841a737e2a80c7c873949ebf40">-->
-<!--        </div>-->
-<!--        <div class="platform-info">-->
-<!--          <div class="platform-info-title">企鹅电竞</div>-->
-<!--        </div>-->
-<!--      </el-col>-->
-<!--    </router-link>-->
-    <router-link :to="{name: 'platformRoom', params: {platform: 'cc'}}">
-      <el-col class="platform-col" :span="11">
+      </router-link>
+    </el-col>
+
+    <el-col :sm="{ span: 12 }" class="el-col-item">
+      <router-link
+        class="platform-col"
+        :to="{ name: 'platformRoom', params: { platform: 'cc' } }"
+      >
         <div class="pic-div cc-pic-div">
-          <img class="cc-pic" src="https://imgsrc.baidu.com/forum/pic/item/0ff41bd5ad6eddc48041796937dbb6fd536633fa.jpg">
+          <img
+            class="cc-pic"
+            src="https://imgsrc.baidu.com/forum/pic/item/0ff41bd5ad6eddc48041796937dbb6fd536633fa.jpg"
+          />
         </div>
         <div class="platform-info">
           <div class="platform-info-title">网易CC</div>
         </div>
-      </el-col>
-    </router-link>
+      </router-link>
+    </el-col>
   </el-row>
 </template>
 
@@ -58,31 +77,34 @@ export default {
   name: "Platforms",
   activated() {
     this.$emit("activated", 2)
-  }
+  },
 }
 </script>
 
 <style scoped>
-.platform-row{
+.platform-row {
   height: 100%;
   width: 100%;
 }
-.platform-col{
-  position: relative;
-  margin-left: 30px;
-  background-color: #d2d2d2;
-  margin-bottom: 30px;
+.el-col-item {
+  margin:10px 0;
+}
+.platform-col {
   height: 300px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  background-color: #d2d2d2;
   border-radius: 10px;
   transition: all 0.2s;
+  text-decoration: none;
+  padding: 20px;
 }
-.platform-col:hover{
-  cursor: pointer;
+.platform-col:hover {
   transform: scale(1.04);
 }
-.pic-div{
-  float: left;
-  margin-top: 10px;
+.pic-div {
   height: 280px;
   width: 200px;
   /*flex 布局*/
@@ -93,50 +115,60 @@ export default {
   justify-content: center;
   text-align: justify;
 }
-.douyu-pic-div{
-  background: #FD6833;
+.douyu-pic-div {
+  background: #fd6833;
+  max-width: 100%;
 }
-.bilibili-pic-div{
-  background: #DE4D79;
+.bilibili-pic-div {
+  background: #de4d79;
+  max-width: 100%;
 }
-.huya-pic-div{
-  background: #FDFDFD;
+.huya-pic-div {
+  background: #fdfdfd;
+  max-width: 100%;
 }
-.cc-pic-div{
-  background: #FDFDFD;
+.cc-pic-div {
+  background: #fdfdfd;
+  max-width: 100%;
 }
-.egame-pic-div{
-  background: #252525;
+.douyu-pic {
+  object-fit: contain;
+  max-width: 100%;
 }
-.douyu-pic{
-
+.bilibili-pic {
+  object-fit: contain;
+  max-width: 100%;
 }
-.bilibili-pic{
-  object-fit: cover;
+.huya-pic {
+  object-fit: contain;
+  max-width: 100%;
 }
-.huya-pic{
-}
-.cc-pic{
-}
-.egame-pic{
-  height: 100%;
-  width: 100%;
+.cc-pic {
+  max-width: 100%;
   object-fit: contain;
 }
-.platform-info{
-  position: absolute;
-  top: 40%;
-  right: 0px;
-  left: 210px;
+.platform-info {
+  flex: 2;
+  margin-left: 10px;
 }
-.platform-info-title{
-  font-size: 35px;
+.platform-info-title {
+  font-size: 28px;
   font-weight: bold;
   text-align: center;
-  width: 100%;
 }
-a:link { text-decoration: none;color: #4e4c4c}
-a:active { text-decoration:blink}
-a:hover { text-decoration:underline;color: #4e4c4c}
-a:visited { text-decoration: none;color: #4e4c4c}
+a:link {
+  text-decoration: none;
+  color: #4e4c4c;
+}
+a:active {
+  text-decoration: blink;
+}
+a:hover {
+  /* text-decoration: underline; */
+  color: #4e4c4c;
+}
+a:visited {
+  text-decoration: none;
+  color: #4e4c4c;
+}
 </style>
