@@ -161,13 +161,17 @@ export default {
 
              art.on('resize', function (args) {
                _this.danmaku.resize();
-             });
-
+             });    
              this.danmaku = new Danmaku({
                container: document.getElementsByClassName('art-danmuku')[0],
                // media: document.getElementsByClassName('art-video')[0],
              });
-
+             addEventListener('keyup', (e) => {
+               if (e.key === 'Enter') {
+                art.player.fullscreen=!art.player.fullscreen
+              }
+             })
+             
              let speed = (this.danmuSpeed + 25)/100 * 200
 
              this.danmaku.speed = speed
