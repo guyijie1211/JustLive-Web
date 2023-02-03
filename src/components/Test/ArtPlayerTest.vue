@@ -110,21 +110,58 @@ export default {
                quality: this.quality,
                airplay: true,
                customType: {
-                 customHls: function (video, url) {
-                   const hls = new Hls();
-                   hls.loadSource(url);
-                   hls.attachMedia(video);
-                   _this.hls = hls
+                 // customHls: function (video, url) {
+                 //   const hls = new Hls();
+                 //   hls.loadSource(url);
+                 //   hls.attachMedia(video);
+                 //   _this.hls = hls
+                 // },
+                 // flv: function (video, url) {
+                 //   const flvPlayer = flvjs.createPlayer({
+                 //     type: 'flv',
+                 //     url: url,
+                 //   });
+                 //   flvPlayer.attachMediaElement(video);
+                 //   flvPlayer.load();
+                 //   _this.flv = flvPlayer
+                 // },
+                 customHls: function (video, url, art) {
+                   console.log("播放customHls")
+                   if (Hls.isSupported()) {
+                     const hls = new Hls();
+                     hls.loadSource(url);
+                     hls.attachMedia(video);
+                     // optional
+                     art.hls = hls;
+                     art.once('url', () => hls.destroy());
+                     art.once('destroy', () => hls.destroy());
+                     art.once('switch', () => hls.destroy());
+                   } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                     video.src = url;
+                   } else {
+                     art.notice.show = 'Unsupported playback format: m3u8';
+                   }
                  },
-                 flv: function (video, url) {
-                   const flvPlayer = flvjs.createPlayer({
-                     type: 'flv',
-                     url: url,
-                   });
-                   flvPlayer.attachMediaElement(video);
-                   flvPlayer.load();
-                   _this.flv = flvPlayer
-                 },
+                 flv: function (video, url, art) {
+                   if (flvjs.isSupported()) {
+                     console.log("播放flv")
+                     const flv = flvjs.createPlayer({ type: 'flv', url });
+                     flv.attachMediaElement(video);
+                     flv.load();
+                     // optional
+                     art.flv = flv;
+                     art.on('selector', (item) => {
+                       console.log("切换清晰度")
+                       console.log(item)
+                       // flv.destroy()
+                     });
+                     art.once('destroy', () => flv.destroy());
+                     console.log("destroyFlv")
+                     // art.once('switch', () => flv.destroy());
+                   } else {
+                     art.notice.show = 'Unsupported playback format: flv';
+                   }
+                 }
                },
                controls: [
                  {
@@ -146,24 +183,29 @@ export default {
                  },
                ],
              });
-             if (_this.videoType == 'customHls') {
-               art.on('destroy', function (args) {
-                 _this.hls.destroy();
-               });
-               art.on('switch', function (args) {
-                 _this.hls.destroy();
-                 art.play = true;
-               });
-             } else if (_this.videoType == 'flv') {
-               art.on('destroy', function (args) {
-                 _this.flv.destroy();
-               });
-               art.on('switch', function (args) {
-                 _this.flv.destroy();
-                 art.play = true;
-               });
-             }
 
+             // if (_this.videoType == 'customHls') {
+             //   art.on('destroy', function (args) {
+             //     _this.hls.destroy();
+             //   });
+             //   art.on('switch', function (args) {
+             //     _this.hls.destroy();
+             //     art.play = true;
+             //   });
+             // } else if (_this.videoType == 'flv') {
+             //   art.on('destroy', function (args) {
+             //     _this.flv.destroy();
+             //   });
+             //   art.on('switch', function (args) {
+             //     _this.flv.destroy();
+             //     art.play = true;
+             //   });
+             // }
+             art.on('selector', (item) => {
+               console.log("切换清晰度")
+               console.log(item)
+               // flv.destroy()
+             });
              art.on('resize', function (args) {
                _this.danmaku.resize();
              });
