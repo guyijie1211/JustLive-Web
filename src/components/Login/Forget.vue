@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="forgetVisible" :modal="false" width="500px" v-loading="loadingVisible" @open="handleDialogOpen()">
+  <el-dialog :visible.sync="forgetVisible" :modal="false" v-loading="loadingVisible" @open="handleDialogOpen()">
     <div slot="title" class="dialog-header"><h3>忘记密码</h3></div>
     <el-form :model="userModel" :rules="formRules" class="el-dialog-form"
              ref="forgetForm" label-width="120px" label-position="right" size="small">

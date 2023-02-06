@@ -1,0 +1,222 @@
+<template>
+    <el-container class="home-under-header">
+      <el-main id="home-main" class="home-main">
+        <keep-alive exclude="PlatformRooms,AreaAll">
+          <router-view ref="mychild" @loginSuccess="loginSuccess" @startLoad="startLoad" @loadFinish="loadFinish" @activated="activated" :isLogin="isLogin" :userInfo="userInfo"></router-view>
+        </keep-alive>
+      </el-main>
+      <el-footer class="home-aside">
+        <el-row >
+          <el-col :span="8">
+            <router-link class="home-aside-item" to="/mobile/index/home/recommend">
+              <div class="home-aside-item-icon"><i class="iconfont icon-home"></i></div>
+              <div class="home-aside-item-words">推荐</div>
+            </router-link>
+          </el-col>
+          <el-col :span="8">
+            <router-link class="home-aside-item"  to="/mobile/index/home/follows">
+              <div class="home-aside-item-icon"><i class="iconfont icon-favorite"></i></div>
+              <div class="home-aside-item-words">关注</div>
+            </router-link>
+          </el-col>
+          <el-col :span="8">
+            <router-link class="home-aside-item" to="/mobile/index/home/areas">
+              <div class="home-aside-item-icon"><i class="iconfont icon-fenlei"></i></div>
+              <div class="home-aside-item-words">分区</div>
+            </router-link>
+          </el-col>
+        </el-row>
+        <div class="beside-aside"></div>
+      </el-footer>
+      <el-backtop target=".home-main"></el-backtop>
+    </el-container>
+</template>
+
+
+<script>
+
+import {getApp} from "@/api/liveList";
+
+export default {
+  name: 'HomeMobile',
+  components: {
+
+  },
+  props: ['userInfo','isLogin'],
+  data() {
+    return {
+      appUrl:"",
+      player: null,
+      isActive: false,
+      searchInput: '',
+      transformFlag: 'translateY(0px)',
+      gettingList: false,
+    }
+  },
+  methods: {
+    toGithubIssuePage(){
+      window.open("https://github.com/guyijie1211/JustLive-Web/issues/new", "_blank");
+    },
+    toAndroidAppRelease(){
+      window.open("https://github.com/guyijie1211/JustLive-Android/releases");
+    },
+    load(){
+      this.$refs.mychild.loadRoomList();
+    },
+    getAppUrl() {
+      getApp()
+          .then(response => {
+            if(response.data.code === 200){
+              let info = response.data.data
+              this.appUrl = info.apkMD5
+            }
+          })
+    },
+    loginSuccess(userInfo){
+      let _this = this
+      _this.$emit("loginSuccess",userInfo)
+    },
+    clickRecommend(){
+      let beside = document.getElementsByClassName("beside-aside")[0]
+      beside.style.transform = 'translateY(0px)'
+    },
+    clickFollows(){
+      let beside = document.getElementsByClassName("beside-aside")[0]
+      beside.style.transform = 'translateY(45px)'
+    },
+    clickPlatform(){
+      let beside = document.getElementsByClassName("beside-aside")[0]
+      beside.style.transform = 'translateY(90px)'
+    },
+    clickKinds(){
+      let beside = document.getElementsByClassName("beside-aside")[0]
+      beside.style.transform = 'translateY(135px)'
+    },
+    clickTv(){
+      let beside = document.getElementsByClassName("beside-aside")[0]
+      beside.style.transform = 'translateY(180px)'
+    },
+    activated(target){
+      if (target == 0){
+        this.clickRecommend()
+      }
+      if (target == 1){
+        this.clickFollows()
+      }
+      if (target == 2){
+        this.clickPlatform()
+      }
+      if (target == 3){
+        this.clickKinds()
+      }
+      if (target == 4){
+        this.clickTv()
+      }
+    },
+    loadFinish() {
+      this.gettingList = false;
+    },
+    listenerFunction(e) {
+
+    },
+    startLoad() {
+      this.gettingList = true
+    },
+    handleScroll () {
+      let target = document.getElementById("home-main")
+      if(!this.gettingList && (target.scrollHeight-target.clientHeight)-target.scrollTop < 5){
+        this.load()
+      }
+    },
+    toTop(){
+
+    },
+  },
+  activated() {
+    console.log("activated")
+    document.addEventListener('scroll', this.handleScroll, true);
+  },
+  created() {
+    this.getAppUrl()
+  },
+  deactivated() {
+    console.log("deactivated")
+    document.removeEventListener('scroll', this.handleScroll, true);
+  },
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+.home-under-header{
+  height: 80%;
+  width: 100%;
+}
+.home-aside{
+  /*padding-top: 10px;*/
+  width: 100%;
+  box-shadow: 0px -5px 5px -5px #4e4c4c;
+  overflow: hidden;
+  position: relative;
+}
+.home-aside-item{
+  /*padding-top: 10px;*/
+  /*padding-bottom: 5px;*/
+  float: top;
+  width: 20px;
+  height: 100%;
+}
+.home-aside-item:hover{
+  cursor: pointer;
+  transform: scale(1.3); /* 放大1.2倍 */
+  font-weight: bolder;
+  /*background-color: #d7d7d7;*/
+  /*color: #0086b3;*/
+}
+.home-aside-item-icon{
+  margin-left: 15%;
+  float: left;
+}
+.home-aside-item-words{
+  font-weight: lighter;
+  margin-left: 10px;
+  float: left;
+}
+
+/deep/ .el-input__inner{
+  height: 40px;
+  border-radius: 20px;    /*输入框圆角值*/
+}
+a {
+  color: #303133;
+  text-decoration: #303133;
+}
+.home-main{
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.home-main::-webkit-scrollbar {
+  width: 8px;
+  /*height: 4px;*/
+}
+.home-main::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #8e8e8e;
+}
+
+.beside-aside{
+  position: absolute;
+  top: 15px;
+  right: 0;
+  height: 35px;
+  width: 4px;
+  background: #4e4c4c;
+  transition: all 0.3s;
+  transform: translateY(0px);
+}
+.el-header, .el-footer {
+  color: #333;
+  text-align: center;
+  line-height: 60px;
+}
+</style>
