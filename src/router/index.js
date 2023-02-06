@@ -15,6 +15,7 @@ import ArtPlayerTest from "@/components/Test/ArtPlayerTest";
 import RoomMobile from "../components/Mobile/RoomMobile";
 import IndexMobile from "../components/Mobile/IndexMobile";
 import HomeMobile from "../components/Mobile/HomeMobile";
+import RecommendMobile from "../components/Mobile/RecommendMobile";
 
 // 解决ElementUI导航栏中的vue-router在3.0版本以上重复点菜单报错问题
 const originalPush = Router.prototype.push
@@ -118,7 +119,7 @@ const router = new Router({
                         {
                             path: '/mobile/index/home/recommend',
                             name: '直播推荐移动端',
-                            component: Recommend
+                            component: RecommendMobile
                         },
                         {
                             path: '/mobile/index/home/follows',

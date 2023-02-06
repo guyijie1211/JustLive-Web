@@ -78,23 +78,15 @@ export default {
     },
     clickRecommend(){
       let beside = document.getElementsByClassName("beside-aside")[0]
-      beside.style.transform = 'translateY(0px)'
+      beside.style.transform = 'translateX(0)'
     },
     clickFollows(){
       let beside = document.getElementsByClassName("beside-aside")[0]
-      beside.style.transform = 'translateY(45px)'
-    },
-    clickPlatform(){
-      let beside = document.getElementsByClassName("beside-aside")[0]
-      beside.style.transform = 'translateY(90px)'
+      beside.style.transform = 'translateX(125px)'
     },
     clickKinds(){
       let beside = document.getElementsByClassName("beside-aside")[0]
-      beside.style.transform = 'translateY(135px)'
-    },
-    clickTv(){
-      let beside = document.getElementsByClassName("beside-aside")[0]
-      beside.style.transform = 'translateY(180px)'
+      beside.style.transform = 'translateX(185px)'
     },
     activated(target){
       if (target == 0){
@@ -196,7 +188,7 @@ a {
   overflow-y: auto;
 }
 .home-main::-webkit-scrollbar {
-  width: 8px;
+  width: 3px;
   /*height: 4px;*/
 }
 .home-main::-webkit-scrollbar-thumb {
@@ -206,13 +198,14 @@ a {
 
 .beside-aside{
   position: absolute;
-  top: 15px;
-  right: 0;
-  height: 35px;
-  width: 4px;
+  top: 2px;
+  left: 0;
+  height: 6px;
+  width: 20%;
+  margin-left: 10px;
   background: #4e4c4c;
   transition: all 0.3s;
-  transform: translateY(0px);
+  transform: translateX(0px);
 }
 .el-header, .el-footer {
   color: #333;
