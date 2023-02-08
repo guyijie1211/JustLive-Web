@@ -21,12 +21,12 @@ export default {
     if (this._isMobile()) {
       if (!this.$route.path.match(/(mobile)/i)) {
         console.log("跳转手机端");
-        this.$router.replace('/mobile');
+        this.$router.replace('/mobile' + this.$route.path);
       }
     } else {
       if (this.$route.path.match(/(mobile)/i)) {
-        console.log("跳转PC端");
-        this.$router.replace('/');
+        console.log("跳转手机端");
+        this.$router.replace(this.$route.path.replace(/\/mobile/, ""));
       }
     }
   }

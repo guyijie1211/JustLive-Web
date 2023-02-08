@@ -7,32 +7,30 @@
       </el-main>
       <el-footer class="home-aside">
         <el-row >
-          <el-col :span="8">
+          <el-col id="aside1" :span="12">
             <router-link class="home-aside-item" to="/mobile/index/home/recommend">
               <div class="home-aside-item-icon"><i class="iconfont icon-home"></i></div>
               <div class="home-aside-item-words">推荐</div>
             </router-link>
           </el-col>
-          <el-col :span="8">
+          <el-col id="aside2" :span="12">
             <router-link class="home-aside-item"  to="/mobile/index/home/follows">
               <div class="home-aside-item-icon"><i class="iconfont icon-favorite"></i></div>
               <div class="home-aside-item-words">关注</div>
             </router-link>
           </el-col>
-          <el-col :span="8">
-            <router-link class="home-aside-item" to="/mobile/index/home/areas">
-              <div class="home-aside-item-icon"><i class="iconfont icon-fenlei"></i></div>
-              <div class="home-aside-item-words">分区</div>
-            </router-link>
-          </el-col>
+<!--          <el-col id="aside3" :span="8">-->
+<!--            <router-link class="home-aside-item" to="/mobile/index/home/areas">-->
+<!--              <div class="home-aside-item-icon"><i class="iconfont icon-fenlei"></i></div>-->
+<!--              <div class="home-aside-item-words">分区</div>-->
+<!--            </router-link>-->
+<!--          </el-col>-->
         </el-row>
         <div class="beside-aside"></div>
       </el-footer>
       <el-backtop target=".home-main"></el-backtop>
     </el-container>
 </template>
-
-
 <script>
 
 import {getApp} from "@/api/liveList";
@@ -82,11 +80,13 @@ export default {
     },
     clickFollows(){
       let beside = document.getElementsByClassName("beside-aside")[0]
-      beside.style.transform = 'translateX(125px)'
+      let left = document.getElementById("aside1").offsetWidth
+      beside.style.transform = 'translateX('+left+'px)'
     },
     clickKinds(){
       let beside = document.getElementsByClassName("beside-aside")[0]
-      beside.style.transform = 'translateX(185px)'
+      let left = document.getElementById("aside2").offsetWidth
+      beside.style.transform = 'translateX('+left*2+'px)'
     },
     activated(target){
       if (target == 0){
@@ -155,18 +155,11 @@ export default {
   /*padding-top: 10px;*/
   /*padding-bottom: 5px;*/
   float: top;
-  width: 20px;
+  width: 100%;
   height: 100%;
 }
-.home-aside-item:hover{
-  cursor: pointer;
-  transform: scale(1.3); /* 放大1.2倍 */
-  font-weight: bolder;
-  /*background-color: #d7d7d7;*/
-  /*color: #0086b3;*/
-}
 .home-aside-item-icon{
-  margin-left: 15%;
+  margin-left: 30%;
   float: left;
 }
 .home-aside-item-words{
@@ -195,13 +188,16 @@ a {
   border-radius: 10px;
   background: #8e8e8e;
 }
+.el-main/deep/ {
+  padding: 10px;
+}
 
 .beside-aside{
   position: absolute;
-  top: 2px;
-  left: 0;
+  left: 9%;
+  bottom: 2px;
   height: 6px;
-  width: 20%;
+  width: 33%;
   margin-left: 10px;
   background: #4e4c4c;
   transition: all 0.3s;

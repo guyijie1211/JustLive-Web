@@ -215,7 +215,7 @@ export default {
       topFollowLoading: true,
       showFollowLoading:false,
       roomListOn: [],
-      mixLiveUpdate: "2023020302",
+      mixLiveUpdate: "2023020301",
       player: null,
       isActive: false,
       searchInput: '',
