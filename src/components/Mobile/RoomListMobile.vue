@@ -1,7 +1,7 @@
 <template>
   <el-row id="recommend-room-row" :gutter="3" class="recommend-room-row">
     <el-col class="recommend-room-col" :span="12" v-for="(room, index) in roomList" :key="index">
-        <router-link :to="{path:'/mobile/index/liveRoom',query:{ platform : room.platForm, roomId : room.roomId }}" :target="openBlank()">
+        <router-link :to="{path:'/mobile/index/liveRoom',query:{ platform : room.platForm, roomId : room.roomId }}">
           <el-card  shadow="hover" class="recommend-room-card">
             <div class="recommend-room-pic">
               <div class="pic-bottom">

@@ -1,5 +1,7 @@
 <template>
-  <div id="player" ref="artRef" className="artplayer-app"></div>
+  <div id="player" ref="artRef" className="artplayer-app">
+    <div id="artplayer-danmuku"></div>
+  </div>
 </template>
 
 <script>
@@ -8,6 +10,7 @@ import flvjs from 'flv.js';
 import Artplayer from 'artplayer';
 import Global from "@/components/Global";
 import {getRealUrl} from "@/api/liveList";
+import artplayerPluginDanmuku from 'artplayer-plugin-danmuku'
 
 export default {
   name: "ArtPlayerMobile",
@@ -89,18 +92,13 @@ export default {
                 container: this.$refs.artRef,
                 autoplay: true, //自动播放
                 isLive: true, //直播
-                // url: this.quality[this.quality.length - 1].url,
-                url: "",
+                url: this.quality[this.quality.length - 1].url,
+                // url: "",
                 type: this.videoType,
                 autoSize: true, //固定视频比例
-                pip: true,  //画中画
                 fullscreen: true, //全屏按钮
-                aspectRatio: true,  // 长宽比
                 setting: true, // 设置按钮
-                fullscreenWeb: true,  //网页全屏按钮
                 volume: 1, //默认音量
-                flip: true, //翻转
-                screenshot: true,//截图
                 mutex: false, //假如页面里同时存在多个播放器，是否只能让一个播放器播放
                 lang: 'zh-cn',  //
                 quality: this.quality,
@@ -137,7 +135,9 @@ export default {
                 },
                 plugins: [
                   artplayerPluginDanmuku({
-
+                    danmuku: [],
+                    maxWidth: 100, // 输入框最大宽度，范围在[0 ~ Infinity]，填 0 则为 100% 宽度
+                    mount: document.querySelector('#artplayer-danmuku'),
                   })
                 ]
               });
@@ -185,6 +185,12 @@ export default {
               switch (body.cmd) {
                 case 'DANMU_MSG':
                   _this.emitDanmu(`${body.info[1]}`, `${body.info[2][1]}`);
+                  art.plugins.artplayerPluginDanmuku.emit({
+                    text: `${body.info[1]}`, // 弹幕文本
+                    color: '#fff', // 弹幕局部颜色
+                    border: false, // 是否显示描边
+                    mode: 0, // 弹幕模式: 0表示滚动, 1静止
+                  });
                   break;
               }
             })
