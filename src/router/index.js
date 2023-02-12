@@ -17,6 +17,7 @@ import IndexMobile from "../components/Mobile/IndexMobile";
 import HomeMobile from "../components/Mobile/HomeMobile";
 import RecommendMobile from "../components/Mobile/RecommendMobile";
 import FollowsMobile from "../components/Mobile/FollowsMobile";
+import SearchMobile from "@/components/Mobile/SearchMobile.vue";
 
 // 解决ElementUI导航栏中的vue-router在3.0版本以上重复点菜单报错问题
 const originalPush = Router.prototype.push
@@ -156,9 +157,9 @@ const router = new Router({
                     component: RoomMobile
                 },
                 {
-                    path: "/index/search",
-                    name: "search",
-                    component: Search
+                    path: "/mobile/index/search",
+                    name: "searchMobile",
+                    component: SearchMobile
                 },
             ]
 

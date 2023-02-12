@@ -3,15 +3,6 @@
     <el-header class="home-header" style="height: 50px">
       <div class="home-head-search-bar">
         <div class="logo" @click="toMain()">JustLive</div>
-<!--        <div v-if="showSearch">-->
-<!--          <el-input-->
-<!--              class="head-search"-->
-<!--              placeholder="搜索主播(斗鱼用房间号)"-->
-<!--              v-model="searchInput"-->
-<!--              @keydown.enter.native="submitKw()">-->
-<!--          </el-input>-->
-<!--          <el-button class="search-btn" icon="el-icon-search" circle @click="submitKw()" size="small"></el-button>-->
-<!--        </div>-->
         <div class="user-info">
           <div v-if="isLogin == 'true'" class="user-info-in">
             <el-dropdown trigger="click" @command="handleCommand" >
@@ -30,6 +21,7 @@
             登录
           </div>
         </div>
+        <el-button  v-if="showSearch" class="search-btn" icon="el-icon-search" circle @click="submitKw()" size="small"></el-button>
       </div>
     </el-header>
     <keep-alive include="Home">
@@ -325,12 +317,7 @@ export default {
       this.$router.push('/mobile/index/home/recommend')
     },
     submitKw(){
-      if(this.searchInput.trim()!=''){
-        let searchInput = this.searchInput
-        this.showSearch = false
-        this.searchInput = ''
-        this.$router.push({ path: '/index/search', query:{ keyWord : searchInput } })
-      }
+        this.$router.push({ path: '/mobile/index/search' })
     },
     refreshRoomList(){
       this.roomListOn = []
@@ -544,8 +531,8 @@ export default {
   box-shadow: 0px 5px 5px -5px #4e4c4c;
 }
 .head-search{
-  width: 250px;
-  margin-left: 40%;
+  width: 20%;
+  /*margin-left: 40%;*/
   margin-top: 9px;
 }
 .home-head-search-bar{
@@ -562,17 +549,16 @@ export default {
   padding: 0px;
 }
 .logo{
-  position: absolute;
+  /*position: absolute;*/
   cursor: pointer;
-  top: 6px;
-  left: 0px;
+  float: left;
   font-weight: lighter;
+  margin-top: 8px;
   font-size: 25px;
 }
 .user-info{
-  position: absolute;
-  top: 12px;
-  right: 0px;
+  float: right;
+  margin-top: 13px;
 }
 .search-head-pic{
   width: 100%;
@@ -650,7 +636,9 @@ export default {
   width: 50px;
 }
 .search-btn{
-  margin-left: 10px;
+  float: right;
+  margin-top: 10px;
+  margin-right: 10px;
 }
 .update-info-timeline{
   /*width: 90%;*/
