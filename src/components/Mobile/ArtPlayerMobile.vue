@@ -14,7 +14,7 @@ import artplayerPluginDanmuku from 'artplayer-plugin-danmuku'
 
 export default {
   name: "ArtPlayerMobile",
-  props: ['platform', 'roomId', 'isLive', ],
+  props: ['platform', 'roomId', 'isLive'],
   data() {
     return {
       player: null,
@@ -27,11 +27,30 @@ export default {
       flv: null,
       danmuShow: true,
       danmuNumStep: 0,
+      danmuStyle: {
+        fontSize: "6%",
+        color: "#ffffff",
+        textShadow: true,
+        opacity: 100,
+        fontWeight: 50,
+      },
+      danmuSpeed: 10,
+      danmuNum: 100,
+      danmuArea: [10, '25%'],
     }
   },
   methods: {
     init() {
       let _this = this
+      if (localStorage.getItem("danmuStyle")) {
+        this.danmuStyle = JSON.parse(localStorage.getItem("danmuStyle"))
+      }
+      if (localStorage.getItem("danmuSpeed")) {
+        this.danmuSpeed = Number(localStorage.getItem("danmuSpeed"))
+      }
+      if (localStorage.getItem("danmuArea")) {
+        this.danmuArea = localStorage.getItem("danmuArea").split(",")
+      }
       if (this.isLive) {
         getRealUrl(this.platform, this.roomId)
             .then(response => {
@@ -97,6 +116,7 @@ export default {
                 type: this.videoType,
                 autoSize: true, //固定视频比例
                 fullscreen: true, //全屏按钮
+                fullscreenWeb: true,
                 setting: true, // 设置按钮
                 volume: 1, //默认音量
                 mutex: false, //假如页面里同时存在多个播放器，是否只能让一个播放器播放
@@ -138,17 +158,25 @@ export default {
                     danmuku: [],
                     maxWidth: 100, // 输入框最大宽度，范围在[0 ~ Infinity]，填 0 则为 100% 宽度
                     mount: document.querySelector('#artplayer-danmuku'),
+                    speed: _this.danmuSpeed, // 弹幕持续时间，单位秒，范围在[1 ~ 10]
+                    opacity: _this.danmuStyle.opacity, // 弹幕透明度，范围在[0 ~ 1]
+                    fontSize: _this.danmuStyle.fontSize, // 字体大小，支持数字和百分比
+                    margin: _this.danmuArea, // 弹幕上下边距，支持数字和百分比
                   })
                 ]
               });
-
-              art.on('selector', (item) => {
-                console.log("切换清晰度")
-                console.log(item)
-                // flv.destroy()
-              });
-
               this.player = art
+              // 弹幕配置变化监听
+              art.on('artplayerPluginDanmuku:config', (option) => {
+                console.info('配置变化', option);
+                this.danmuStyle.fontSize = option.fontSize;
+                this.danmuStyle.opacity = option.opacity;
+                this.danmuSpeed = option.speed;
+                this.danmuArea = option.margin;
+                localStorage.setItem('danmuStyle', JSON.stringify(this.danmuStyle))
+                localStorage.setItem('danmuSpeed', this.danmuSpeed)
+                localStorage.setItem('danmuArea', this.danmuArea)
+              });
               if (this.platform == 'bilibili') {
                 this.initBilibiliWs(art)
               } else if (this.platform == 'douyu') {
@@ -223,6 +251,12 @@ export default {
             break;
           case "chatmsg":
             _this.emitDanmu(packet.body.txt, packet.body.nn);
+            art.plugins.artplayerPluginDanmuku.emit({
+              text: packet.body.txt, // 弹幕文本
+              color: '#fff', // 弹幕局部颜色
+              border: false, // 是否显示描边
+              mode: 0, // 弹幕模式: 0表示滚动, 1静止
+            });
             break;
         }
       };
@@ -250,6 +284,12 @@ export default {
           let msg_obj = Global._on_mes(this.result)
           if (msg_obj.type == "chat") {
             _this.emitDanmu(msg_obj.content, msg_obj.name);
+            art.plugins.artplayerPluginDanmuku.emit({
+              text: msg_obj.content, // 弹幕文本
+              color: '#fff', // 弹幕局部颜色
+              border: false, // 是否显示描边
+              mode: 0, // 弹幕模式: 0表示滚动, 1静止
+            });
           }
         }
       }

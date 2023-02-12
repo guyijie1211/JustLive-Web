@@ -12,7 +12,8 @@
       <div v-if="isLive()" id="video" class="room-left-video">
         <ArtPlayerMobile ref="childPlayer" v-if="isLive()" class="room-left-video-play" @notSupport="notSupport"
                        @newDanmuSend="newDanmuSend" :platform="platform" :room-id="roomId"
-                       :is-live="isLive"/>
+                       :is-live="isLive" :danmu-style="danmuStyle" :danmu-speed="danmuSpeed" :danmu-area="danmuArea"
+                         :danmu-num="danmuNum"/>
       </div>
       <div v-else class="room-left-video-notLive">直播间未开播</div>
       <div class="room-left-info">
@@ -127,125 +128,9 @@ export default {
             this.followed = flag
           }
         })
-      this.initBan()
-
     },
     getPreList(pic){
       return [pic]
-    },
-    initBan(){
-      console.log("initBan")
-      let banInfo
-      if (this.isLogin == "true") {
-        banInfo = this.userInfo;
-      } else {
-        banInfo = JSON.parse(sessionStorage.getItem('localBanInfo'));
-      }
-      let banContentList = banInfo.allContent.trim().split(";");
-      if (banContentList[0].trim() == "") {
-        banContentList.splice(0, 1);
-      }
-      this.banContentList = banContentList;
-      let checkedContentList = banInfo.selectedContent.trim().split(";");
-      if (checkedContentList[0].trim() == "") {
-        checkedContentList.splice(0, 1);
-      }
-      this.checkedContentList = checkedContentList;
-      this.banActive = banInfo.isActived == "1" ? true : false;
-      if (this.platform == "douyu") {
-        this.banLevel = Number(banInfo.douyuLevel);
-      } else if (this.platform == "bilibili") {
-        this.banLevel = Number(banInfo.bilibiliLevel);
-      } else if (this.platform == "huya") {
-        this.banLevel = Number(banInfo.huyaLevel);
-      } else if (this.platform == "cc") {
-        this.banLevel = Number(banInfo.ccLevel);
-      } else if (this.platform == "egame") {
-        this.banLevel = Number(banInfo.egameLevel);
-      }
-      this.banActiveTemp = this.banActive;
-      this.banLevelTemp = this.banLevel;
-      this.banContentListTemp = this.banContentList;
-      this.checkedContentListTemp = this.checkedContentList;
-    },
-    banCancel(){
-      this.popoverVisible = false
-      this.banActiveTemp = this.banActive;
-      this.banLevelTemp = this.banLevel;
-      this.banContentListTemp = this.banContentList;
-      this.checkedContentListTemp = this.checkedContentList;
-    },
-    activeBan(){
-      let _this = this;
-      if (this.isLogin == 'true') {
-        this.loading = true;
-      }
-      this.banActive = this.banActiveTemp;
-      this.banLevel = this.banLevelTemp;
-      this.banContentList = this.banContentListTemp;
-      this.checkedContentList = this.checkedContentListTemp;
-      let banContent = '';
-      for(let i=0;i<this.banContentList.length;i++) {
-        let ban = this.banContentList[i];
-        if (banContent != ''){
-          banContent = banContent + ";" + ban;
-        }else {
-          banContent = ban;
-        }
-      }
-      let checkedContent = '';
-      for(let i=0;i<this.checkedContentList.length;i++) {
-        let ban = this.checkedContentList[i];
-        if (checkedContent != ''){
-          checkedContent = checkedContent + ";" + ban;
-        }else {
-          checkedContent = ban;
-        }
-      }
-      let banObj = this.userInfo;
-      banObj.allContent = banContent;
-      banObj.isActived = this.banActive ? "1" : "0";
-      banObj.selectedContent = checkedContent;
-
-      if (this.platform == "douyu") {
-        banObj.douyuLevel = this.banLevel.toString();
-      } else if (this.platform == "bilibili") {
-        banObj.bilibiliLevel = this.banLevel;
-      } else if (this.platform == "huya") {
-        banObj.huyaLevel = this.banLevel;
-      } else if (this.platform == "cc") {
-        banObj.ccLevel = this.banLevel;
-      }
-
-      if (this.isLogin == 'true') {
-        _this.$emit("changeBan", banObj);
-        changeUserInfo(this.userInfo)
-            .then(response => {
-              this.loading = false;
-              this.popoverVisible = false
-              let data = response.data
-              if(data.code == 200){
-                sessionStorage.setItem('userInfo', JSON.stringify(this.userInfo))
-                this.$notify({
-                  title: '成功',
-                  message: "屏蔽修改生效",
-                  duration: 2000,
-                  type: 'success',
-                  offset: 50,
-                });
-              }
-            })
-      } else {
-        sessionStorage.setItem('localBanInfo', JSON.stringify(banObj));
-        this.$notify({
-          title: '成功',
-          message: "屏蔽修改生效",
-          duration: 2000,
-          type: 'success',
-          offset: 50,
-        });
-        this.popoverVisible = false
-      }
     },
     overCheck(e){
       let target = e.currentTarget;
@@ -505,7 +390,6 @@ export default {
   watch:{
     'isLogin': function (val){
       this.popoverVisible = false
-      this.initBan()
       getRoomInfo(this.userInfo.uid, this.platform, this.roomId)
           .then(response => {
             if (response.data.code == 200){
