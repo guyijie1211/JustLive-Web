@@ -119,9 +119,10 @@
         center>
       <div class="update-info-timeline">
         <el-timeline>
-          <el-timeline-item timestamp="2023/2/3" placement="top" color='#0bbd87'>
+          <el-timeline-item timestamp="2023/2/14" placement="top" color='#0bbd87'>
             <el-card>
               <p>+播放器更新</p>
+              <p>+适配移动端</p>
             </el-card>
           </el-timeline-item>
           <el-timeline-item timestamp="2022/6/13" placement="top">
@@ -245,7 +246,7 @@ export default {
       topFollowLoading: true,
       showFollowLoading:false,
       roomListOn: [],
-      mixLiveUpdate: "2023020301",
+      mixLiveUpdate: "2023021401",
       player: null,
       isActive: false,
       searchInput: '',
