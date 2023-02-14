@@ -5,14 +5,9 @@
       <el-button class="search-bar-btn" type="primary" @click="toSearch" round>搜索</el-button>
     </div>
     <div class="search-result">
-      <ul class="result-ul">
-        <li class="result-li" @click="selectOn">全部</li>
-        <li class="result-li" @click="selectOff">直播中</li>
-        <div class="under-result-li"></div>
-      </ul>
       <div class="search-result-list">
-        <el-row class="search-result-row" :gutter="30">
-          <el-col class="search-result-col" :span="8" v-for="(owner, index) in resultList" :key="index">
+        <el-row class="search-result-row">
+          <el-col class="search-result-col" :span="24" v-for="(owner, index) in resultList" :key="index">
             <el-card @click.native="toRoom(owner.platform, owner.roomId)" class="search-result-card" shadow="hover">
               <div class="search-result-card-head">
                 <img class="search-head-pic" :src=owner.headPic />
@@ -99,7 +94,7 @@ export default {
       }
     },
     toRoom(platform, roomId){
-      this.$router.push({ name: 'liveRoom', query:{ platform : platform, roomId : roomId } });
+      this.$router.push({ name: 'liveRoomMobile', query:{ platform : platform, roomId : roomId } });
     },
     handleOnline(online){
       let num = online.toString().trim()
@@ -142,6 +137,11 @@ export default {
             .then(response => {
               if (response.data.code == 200) {
                 this.resultList = response.data.data
+              } else {
+                this.$message({
+                  message: '请求过多',
+                  type: 'warning'
+                });
               }
               this.loading = false
             })
@@ -245,13 +245,12 @@ export default {
 .search-result-list{
   /*position: absolute;*/
   width: 100%;
-  bottom: 0px;
-  top: 38px;
+  margin-top: 10px;
 }
 .search-result-col{
-  width: 29%;
-  margin-bottom: 20px;
-  margin-left:50px;
+  width: 100%;
+  margin-bottom: 10px;
+  margin-left: 5%;
 }
 .search-result-card-head{
   position: absolute;
