@@ -78,14 +78,14 @@ export const getAllAreas = () =>
         method: 'GET',
     })
 
-export const getSearch = (platform, keyWords, isLive) =>
+export const getSearch = (platform, keyWords, uid) =>
     request({
         url: '/api/live/search',
         method: 'GET',
         params: {
             platform: platform,
             keyWords: keyWords,
-            isLive: isLive,
+            uid: uid,
         }
     })
 

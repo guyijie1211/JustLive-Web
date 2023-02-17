@@ -118,7 +118,7 @@ export default {
   padding: 0px 0px 0px 0px;
 }
 .login-container {
-  width: 390px;
+  /*width: 390px;*/
   margin: 0px auto;
   padding: 0px;
   background-color: #fff;
@@ -140,13 +140,12 @@ export default {
   margin: 0px -10px;
 }
 .login-button {
-
-  margin-left: 90px;
-  width: 100px;
+  margin-right: 10px;
+  /*width: 100px;*/
 }
 .cancel-button{
-  margin-left: 10px;
-  width: 100px;
+  /*margin-left: 10px;*/
+  /*width: 100px;*/
 }
 .login-footer {
   font-size: 13px;

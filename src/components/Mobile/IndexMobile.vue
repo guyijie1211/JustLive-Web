@@ -3,43 +3,9 @@
     <el-header class="home-header" style="height: 50px">
       <div class="home-head-search-bar">
         <div class="logo" @click="toMain()">JustLive</div>
-        <div v-if="showSearch">
-          <el-input
-              class="head-search"
-              placeholder="搜索主播(斗鱼用房间号)"
-              v-model="searchInput"
-              @keydown.enter.native="submitKw()">
-          </el-input>
-          <el-button class="search-btn" icon="el-icon-search" circle @click="submitKw()" size="small"></el-button>
-        </div>
-        <div class="top-follow">
-          <el-dropdown v-if="isLogin == 'true'" trigger="click" placement="bottom-end" @visible-change = "refreshRoomList()">
-            <div>关注列表</div>
-            <el-dropdown-menu class="top-follow-menu" slot="dropdown">
-              <el-dropdown-item v-if="showFollowLoading" v-loading="topFollowLoading" style="height: 80px;"></el-dropdown-item>
-              <el-dropdown-item @click.native="selectArea(areaInfo)" v-for="(owner, index) in roomListOn" :key="index">
-                <router-link :to="{path:'/index/liveRoom',query:{ platform : owner.platForm, roomId : owner.roomId }}" :target="openBlank()">
-                  <el-card  class="search-result-card" shadow="hover">
-                    <div class="search-result-card-head">
-                      <img class="search-head-pic" :src=owner.ownerHeadPic />
-                    </div>
-                    <div class="search-result-card-right">
-                      <div class="result-name">
-                        {{ owner.ownerName }}
-                      </div>
-                      <div>
-                        <div :class="isLive(owner.isLive) ? 'info-isLive' : 'info-notLive'" style="font-size: small">{{ isLive(owner.isLive) ? "直播中" : "未开播" }}</div>
-                      </div>
-                    </div>
-                  </el-card>
-                </router-link>
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </div>
         <div class="user-info">
           <div v-if="isLogin == 'true'" class="user-info-in">
-            <el-dropdown @command="handleCommand" >
+            <el-dropdown trigger="click" @command="handleCommand" >
               <div class="el-dropdown-link">
                 {{ userInfo.nickName }}<i class="el-icon-arrow-down el-icon--right"></i>
               </div>
@@ -55,6 +21,7 @@
             登录
           </div>
         </div>
+        <el-button  v-if="showSearch" class="search-btn" icon="el-icon-search" circle @click="submitKw()" size="small"></el-button>
       </div>
     </el-header>
     <keep-alive include="Home">
@@ -62,23 +29,20 @@
     </keep-alive>
     <el-dialog title="登录"
         :visible.sync="dialogVisibleIndex"
-        width="450px"
-        height="200px"
         :destroy-on-close="true"
         @close="handleLogin('cancel', null)">
       <Login @loginResult="handleLogin"></Login>
     </el-dialog>
     <el-dialog title="修改信息"
-               width="400px"
                :visible.sync="dialogFormVisible"
                :destroy-on-close="true"
                @closed="closeForm()">
-      <el-form :model="form" label-width="80px"  size="small">
+      <el-form :model="form"  size="small">
         <el-form-item label="用户名">
           <el-input :disabled="true" v-model="userInfo.userName" readonly></el-input>
         </el-form-item>
         <el-form-item label="昵称" >
-          <el-input v-model="form.nickName" style="width: 100px"></el-input>
+          <el-input v-model="form.nickName"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -88,21 +52,20 @@
     </el-dialog>
     <BindMail :userInfo="userInfo"  ref="bindMail"></BindMail>
     <el-dialog title="修改密码"
-               width="440px"
                :visible.sync="dialogPasswordVisible"
                :destroy-on-close="true">
-      <el-form ref="userPasswordForm" :model="formPassword" :rules="formPasswordRules" label-width="90px"  size="small">
+      <el-form ref="userPasswordForm" :model="formPassword" :rules="formPasswordRules"  size="small">
         <el-form-item label="用户名" prop="name">
           <el-input :disabled="true" v-model="userInfo.userName" readonly></el-input>
         </el-form-item>
         <el-form-item label="旧密码" prop="oldPassword">
-          <el-input type="password" v-model="formPassword.oldPassword" style="width: 100px"></el-input>
+          <el-input type="password" v-model="formPassword.oldPassword" ></el-input>
         </el-form-item>
         <el-form-item label="新密码" prop="newPassword">
-          <el-input type="password" v-model="formPassword.newPassword" style="width: 100px"></el-input>
+          <el-input type="password" v-model="formPassword.newPassword" ></el-input>
         </el-form-item>
         <el-form-item label="确认新密码" prop="checkNewPassword">
-          <el-input type="password" v-model="formPassword.checkNewPassword" style="width: 100px"></el-input>
+          <el-input type="password" v-model="formPassword.checkNewPassword"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -112,7 +75,6 @@
     </el-dialog>
     <el-dialog title="更新日志"
         :visible.sync="updateInfo"
-        width="40%"
         :show-close="false"
         :close-on-click-modal="false"
         :close-on-press-escape="false"
@@ -218,7 +180,7 @@ import {outputError} from "@/utils/exception";
 import {getRoomsOn} from "@/api/liveList";
 
 export default {
-  name: 'Index',
+  name: 'IndexMobile',
   components: {
     Login,BindMail
   },
@@ -291,7 +253,7 @@ export default {
       }
     },
     toRoom(platform, roomId){
-      this.$router.push({ name: 'liveRoom', query:{ platform : platform, roomId : roomId } });
+      this.$router.push({ name: 'liveRoom移动端', query:{ platform : platform, roomId : roomId } });
     },
     getPlatform(platForm){
       if (platForm == 'bilibili'){
@@ -324,8 +286,8 @@ export default {
               localStorage.removeItem("userInfo");
               this.isLogin = 'false'
               this.userInfo = {}
-              if (window.document.location.pathname == '/index/home/follows'){
-                this.$router.push('/index/home/recommend')
+              if (window.document.location.pathname == '/mobile/index/home/follows'){
+                this.$router.push('/mobile/index/home/recommend')
               }
               this.$message({
                 type: 'warning',
@@ -353,15 +315,10 @@ export default {
       this.updateInfo = !this.updateInfo;
     },
     toMain(){
-      this.$router.push('/index/home/recommend')
+      this.$router.push('/mobile/index/home/recommend')
     },
     submitKw(){
-      if(this.searchInput.trim()!=''){
-        let searchInput = this.searchInput
-        this.showSearch = false
-        this.searchInput = ''
-        this.$router.push({ name: 'search', query:{ keyWord : searchInput } })
-      }
+        this.$router.push({ path: '/mobile/index/search' })
     },
     refreshRoomList(){
       this.roomListOn = []
@@ -403,6 +360,7 @@ export default {
           type: 'warning',
           message: '已退出',
           center: true,
+          duration: 1500
         });
       }).catch(() => {
         this.$message({
@@ -574,8 +532,8 @@ export default {
   box-shadow: 0px 5px 5px -5px #4e4c4c;
 }
 .head-search{
-  width: 250px;
-  margin-left: 40%;
+  width: 20%;
+  /*margin-left: 40%;*/
   margin-top: 9px;
 }
 .home-head-search-bar{
@@ -588,18 +546,20 @@ export default {
   width: 300px;
   border-radius:20px;
 }
+.el-timeline {
+  padding: 0px;
+}
 .logo{
-  position: absolute;
+  /*position: absolute;*/
   cursor: pointer;
-  top: 5px;
-  left: 10px;
-  font-weight: bold;
-  font-size: 30px;
+  float: left;
+  font-weight: lighter;
+  margin-top: 8px;
+  font-size: 25px;
 }
 .user-info{
-  position: absolute;
-  top: 12px;
-  right: 20px;
+  float: right;
+  margin-top: 13px;
 }
 .search-head-pic{
   width: 100%;
@@ -635,11 +595,8 @@ export default {
 .to-login{
   cursor: pointer;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: lighter;
   transition: all 0.1s;
-}
-.to-login:hover{
-  transform: scale(1.2);
 }
 .el-dropdown-link{
   cursor: pointer;
@@ -648,11 +605,7 @@ export default {
   overflow: hidden;
   white-space: nowrap;
   font-size: 18px;
-  font-weight: 600;
-  transition: all 0.2s;
-}
-.el-dropdown-link:hover{
-  transform: scale(1.2);
+  font-weight: lighter;
 }
 .input-style{
   width: 200px;
@@ -684,13 +637,15 @@ export default {
   width: 50px;
 }
 .search-btn{
-  margin-left: 10px;
+  float: right;
+  margin-top: 10px;
+  margin-right: 10px;
 }
 .update-info-timeline{
-  width: 90%;
-  height: 400px;
+  /*width: 90%;*/
+  height: 300px;
   overflow: auto;
-  padding: 10px;
+  padding: 0px;
 }
 .update-info-timeline::-webkit-scrollbar {
   width: 5px;

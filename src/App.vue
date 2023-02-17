@@ -8,6 +8,30 @@
   </div>
 </template>
 
+<script>
+export default {
+  methods:{
+    _isMobile() {
+      let flag = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
+      return flag;
+    }
+  },
+  mounted(){
+    this.$route.path
+    if (this._isMobile()) {
+      if (!this.$route.path.match(/(mobile)/i)) {
+        console.log("跳转手机端");
+        this.$router.replace('/mobile' + this.$route.path);
+      }
+    } else {
+      if (this.$route.path.match(/(mobile)/i)) {
+        console.log("跳转手机端");
+        this.$router.replace(this.$route.path.replace(/\/mobile/, ""));
+      }
+    }
+  }
+}
+</script>
 
 <style>
 html,body,#app {

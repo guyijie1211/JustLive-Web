@@ -1,26 +1,13 @@
 <template>
   <div v-loading="loading" element-loading-background="rgba(243, 246, 248, 0.8)" class="search-container">
     <div class="search-bar">
-      <el-select class="search-bar-select" size="middle" v-model="value" placeholder="选择平台">
-        <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-        </el-option>
-      </el-select>
       <el-input size="middle" class="search-bar-input" v-model="keyWord" @keydown.enter.native="toSearch"></el-input>
-      <el-button class="search-bar-btn" type="primary" @click="toSearch">搜索</el-button>
+      <el-button class="search-bar-btn" type="primary" @click="toSearch" round>搜索</el-button>
     </div>
     <div class="search-result">
-      <ul class="result-ul">
-        <li class="result-li" @click="selectOn">全部</li>
-        <li class="result-li" @click="selectOff">直播中</li>
-        <div class="under-result-li"></div>
-      </ul>
       <div class="search-result-list">
-        <el-row class="search-result-row" :gutter="30">
-          <el-col class="search-result-col" :span="8" v-for="(owner, index) in resultList" :key="index">
+        <el-row class="search-result-row">
+          <el-col class="search-result-col" :span="24" v-for="(owner, index) in resultList" :key="index">
             <el-card @click.native="toRoom(owner.platform, owner.roomId)" class="search-result-card" shadow="hover">
               <div class="search-result-card-head">
                 <img class="search-head-pic" :src=owner.headPic />
@@ -107,7 +94,7 @@ export default {
       }
     },
     toRoom(platform, roomId){
-      this.$router.push({ name: 'liveRoom', query:{ platform : platform, roomId : roomId } });
+      this.$router.push({ name: 'liveRoomMobile', query:{ platform : platform, roomId : roomId } });
     },
     handleOnline(online){
       let num = online.toString().trim()
@@ -143,13 +130,18 @@ export default {
     },
     toSearch(){
       if(this.keyWord.trim()!=''){
-        this.$router.push({ name: 'search', query:{ keyWord : this.keyWord } })
+        this.$router.push({ name: 'searchMobile', query:{ keyWord : this.keyWord } })
         this.resultList = []
         this.loading = true
         getSearch(this.value, this.keyWord, this.userInfo.uid)
             .then(response => {
               if (response.data.code == 200) {
                 this.resultList = response.data.data
+              } else {
+                this.$message({
+                  message: '请求过多',
+                  type: 'warning'
+                });
               }
               this.loading = false
             })
@@ -199,10 +191,8 @@ export default {
   background: #8e8e8e;
 }
 .search-bar{
-  position: absolute;
-  top: 20px;
+  margin-top: 20px;
   width: 100%;
-  height: 50px;
   overflow: hidden;
 }
 .search-bar-select{
@@ -210,21 +200,21 @@ export default {
   width: 110px;
 }
 .search-bar-input{
-  margin-left: 10px;
-  width: 300px;
+  float: left;
+  margin-left: 10%;
+  width: 60%;
 }
 .search-bar-btn{
+  float: left;
   margin-left: 10px;
+  margin-right: 10px;
 }
 .search-result{
-  position: absolute;
-  top: 70px;
-  width: 100%;
-  bottom: 0px;
+  margin-top: 10px;
 }
 .result-ul{
   position: absolute;
-  left: 40%;
+  left: 30%;
   list-style: none;
   height: 25px;
   margin-block: 5px;
@@ -253,15 +243,14 @@ export default {
   transform: translateX(0px);
 }
 .search-result-list{
-  position: absolute;
+  /*position: absolute;*/
   width: 100%;
-  bottom: 0px;
-  top: 38px;
+  margin-top: 10px;
 }
 .search-result-col{
-  width: 29%;
-  margin-bottom: 20px;
-  margin-left:50px;
+  width: 100%;
+  margin-bottom: 10px;
+  margin-left: 5%;
 }
 .search-result-card-head{
   position: absolute;
