@@ -121,7 +121,7 @@
         <el-timeline>
           <el-timeline-item timestamp="2023/2/18" placement="top" color='#0bbd87'>
             <el-card>
-              <p>修复搜索</p>
+              <p>修复搜索(需要登录使用)</p>
             </el-card>
           </el-timeline-item>
           <el-timeline-item timestamp="2023/2/14" placement="top">
