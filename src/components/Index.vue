@@ -119,7 +119,12 @@
         center>
       <div class="update-info-timeline">
         <el-timeline>
-          <el-timeline-item timestamp="2023/2/14" placement="top" color='#0bbd87'>
+          <el-timeline-item timestamp="2023/2/18" placement="top" color='#0bbd87'>
+            <el-card>
+              <p>修复搜索</p>
+            </el-card>
+          </el-timeline-item>
+          <el-timeline-item timestamp="2023/2/14" placement="top">
             <el-card>
               <p>+播放器更新</p>
               <p>+适配移动端</p>
@@ -246,7 +251,7 @@ export default {
       topFollowLoading: true,
       showFollowLoading:false,
       roomListOn: [],
-      mixLiveUpdate: "2023021401",
+      mixLiveUpdate: "2023021801",
       player: null,
       isActive: false,
       searchInput: '',
@@ -404,6 +409,7 @@ export default {
           message: '已退出',
           center: true,
         });
+        location.reload();
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -436,6 +442,7 @@ export default {
       if(result == "success"){
         this.loginSuccess(userInfo)
         this.dialogVisibleIndex = false
+        location.reload();
       }
       if(result == "cancel"){
         this.dialogVisibleIndex = false

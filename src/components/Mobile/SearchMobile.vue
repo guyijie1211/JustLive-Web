@@ -72,17 +72,7 @@ export default {
         this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
       }
       this.keyWord = this.$route.query.keyWord
-      if (this.keyWord.trim() != ''){
-        this.resultList = []
-        this.loading = true
-        getSearch(this.value, this.keyWord, this.selectType)
-            .then(response => {
-              if (response.data.code == 200) {
-                this.resultList = response.data.data
-              }
-              this.loading = false
-            })
-      }
+      this.toSearch()
       let li = document.getElementsByClassName("result-li")[0]
       li.style.color = '#007ACC'
     },
@@ -106,30 +96,15 @@ export default {
         return num+'人'
       }
     },
-    selectOn(){
-      let underLi = document.getElementsByClassName("under-result-li")[0]
-      underLi.style.transform = 'translateX(0px)'
-      underLi.style.width = '33px'
-      let li = document.getElementsByClassName("result-li")[0]
-      li.style.color = '#007ACC'
-      let li2 = document.getElementsByClassName("result-li")[1]
-      li2.style.color = 'rgba(16,16,16,0.95)'
-      this.selectType = '0'
-      this.toSearch()
-    },
-    selectOff(){
-      let underLi = document.getElementsByClassName("under-result-li")[0]
-      underLi.style.transform = 'translateX(52px)'
-      underLi.style.width = '48px'
-      let li = document.getElementsByClassName("result-li")[1]
-      li.style.color = '#007ACC'
-      let li2 = document.getElementsByClassName("result-li")[0]
-      li2.style.color = 'rgba(16,16,16,0.95)'
-      this.selectType = '1'
-      this.toSearch()
-    },
     toSearch(){
       if(this.keyWord.trim()!=''){
+        if (this.userInfo.uid == undefined) {
+          this.$message({
+            message: '搜索功能需登录使用',
+            type: 'warning'
+          });
+          return;
+        }
         this.$router.push({ name: 'searchMobile', query:{ keyWord : this.keyWord } })
         this.resultList = []
         this.loading = true
