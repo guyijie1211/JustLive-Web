@@ -202,10 +202,11 @@ export default {
       getRoomInfo(this.userInfo.uid, this.platform, this.roomId)
         .then(response => {
           if (response.data.code == 200){
-            this.roomInfo = response.data.data
-            this.roomId = response.data.data.roomId
-            let flag = (response.data.data.isFollowed == 1)
-            this.followed = flag
+              this.roomInfo = response.data.data
+              this.roomId = response.data.data.roomId
+              let flag = (response.data.data.isFollowed == 1)
+              this.followed = flag
+              document.title = this.roomInfo.ownerName;
           }
         })
       this.initBan()
