@@ -206,6 +206,7 @@ export default {
             this.roomId = response.data.data.roomId
             let flag = (response.data.data.isFollowed == 1)
             this.followed = flag
+            this.changeTitle(response.data.data.roomName)
           }
         })
       this.initBan()
@@ -560,7 +561,11 @@ export default {
         case 100:
           return "无限"
       }
-    }
+    },
+    changeTitle(roomName) {
+      const platform = this.getPlatform(this.$route.query.platform)
+      document.title = `${platform}+${roomName}`
+    } 
   },
   created() {
     this.listenerFunction();
