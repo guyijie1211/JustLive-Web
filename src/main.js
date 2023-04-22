@@ -20,3 +20,9 @@ new Vue({
   router,
   render: h => h(App)
 });
+
+router.beforeEach((to, from, next) => {
+  /* 路由发生变化修改页面title */
+  document.title = "JustLive"
+  next()
+})
