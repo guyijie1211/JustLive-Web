@@ -202,11 +202,11 @@ export default {
       getRoomInfo(this.userInfo.uid, this.platform, this.roomId)
         .then(response => {
           if (response.data.code == 200){
-            this.roomInfo = response.data.data
-            this.roomId = response.data.data.roomId
-            let flag = (response.data.data.isFollowed == 1)
-            this.followed = flag
-            this.changeTitle(response.data.data.roomName)
+              this.roomInfo = response.data.data
+              this.roomId = response.data.data.roomId
+              let flag = (response.data.data.isFollowed == 1)
+              this.followed = flag
+              document.title = this.roomInfo.ownerName;
           }
         })
       this.initBan()
@@ -561,11 +561,7 @@ export default {
         case 100:
           return "无限"
       }
-    },
-    changeTitle(roomName) {
-      const platform = this.getPlatform(this.$route.query.platform)
-      document.title = `${platform}+${roomName}`
-    } 
+    }
   },
   created() {
     this.listenerFunction();
