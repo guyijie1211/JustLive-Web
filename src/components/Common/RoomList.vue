@@ -8,8 +8,7 @@
     </el-switch>
 
     <el-col class="recommend-room-col" :xs="20" :sm="10" :md="8" :lg="6" :xl="6" v-for="(room, index) in roomList" :key="index">
-        <router-link :to="{path:'/index/liveRoom',query:{ platform : room.platForm, roomId : room.roomId }}" :target="openBlank()">
-          <el-card  shadow="hover" class="recommend-room-card">
+          <el-card  shadow="hover" class="recommend-room-card" @click.native="toRoom(room)">
             <div class="recommend-room-pic">
               <div class="pic-bottom">
                 <div class="pic-bottom-area">
@@ -36,7 +35,6 @@
               </div>
             </div>
           </el-card>
-        </router-link>
       </el-col>
       <div class="roomList-load" v-loading="loading" element-loading-background="rgba(255, 255, 255, 0.8)">
     </div>
@@ -56,8 +54,13 @@ export default {
     }
   },
   methods: {
-    toRoom(platform, roomId){
-      this.$router.push({ name: 'liveRoom', query:{ platform : platform, roomId : roomId } });
+    toRoom(room) {
+      if (!this.blankValue) {
+        this.$router.push({ name: 'liveRoom', query: { platform: room.platForm, roomId: room.roomId } });
+      } else {
+        const url = this.$router.resolve({ name: 'liveRoom', query: { platform: room.platForm, roomId: room.roomId } })
+        window.open(url.href,this.openBlank())
+      }
     },
     getPlatform(platForm){
       if (platForm == 'bilibili'){

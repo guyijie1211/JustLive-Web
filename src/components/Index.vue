@@ -379,6 +379,7 @@ export default {
             if (response.data.code == 200){
               let roomListTemp = response.data.data
               let roomInfo
+              this.roomListOn = []
               for (let i = 0; i < roomListTemp.length; i++){
                 roomInfo = roomListTemp[i]
                 if (roomInfo.isLive == 1){
