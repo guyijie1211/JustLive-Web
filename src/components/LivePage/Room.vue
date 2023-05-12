@@ -123,7 +123,10 @@
           <transition-group name="danmu">
             <div class="room-right-show-danmu" v-for="(danmu, index) in danmuList" :key="index">
               <span class="danmu-name">{{ danmu.fromName }}:</span>
-              <span class="danmu-msg">{{ danmu.msg }}</span>
+              <span class="danmu-msg"
+                :style="{color:danmu.col ? douyuColorList[danmu.col] : '' }"
+              >{{ danmu.msg }}</span>
+           
             </div>
           </transition-group>
         </div>
@@ -143,6 +146,7 @@ import {getRoomInfo} from "@/api/liveList";
 import {changeUserInfo, follow, unFollow} from "@/api/UserApi";
 import Login from "@/components/Login/Login";
 import ArtPlayerTest from "@/components/Test/ArtPlayerTest";
+import { douyuColorList } from "../../assets/js/colorList";
 
 export default {
   name: "Room",
@@ -183,7 +187,8 @@ export default {
       danmuArea: 100,
       form: {
         content: "",
-      }
+      },
+      douyuColorList
     }
   },
   methods: {

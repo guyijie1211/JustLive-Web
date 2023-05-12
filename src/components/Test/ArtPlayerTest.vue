@@ -9,6 +9,7 @@ import Artplayer from 'artplayer';
 import Global from "@/components/Global";
 import {getRealUrl} from "@/api/liveList";
 import Danmaku from 'danmaku';
+import { douyuColorList } from '../../assets/js/colorList';
 
 export default {
   name: "ArtPlayerTest",
@@ -291,7 +292,7 @@ export default {
             break;
           case "chatmsg":
             if (_this.isBanned(packet.body.level, packet.body.txt)) {
-              _this.emitDanmu(packet.body.txt, packet.body.nn);
+              _this.emitDanmu(packet.body.txt, packet.body.nn,packet.body.col);
             }
             break;
         }
@@ -378,13 +379,14 @@ export default {
       }
       return false;
     },
-    emitDanmu(text, from) {
+    emitDanmu(text, from, col) {
       let _this = this;
       var someDanmakuAObj = {
         text: text, // Danmu text
         style: {
           fontSize: (this.danmuStyle.fontSize/100 * 40) + "px",
-          color: this.danmuStyle.color,
+          // color: this.danmuStyle.color,
+          color:col ? douyuColorList[col] : this.danmuStyle.color,
           textShadow: this.danmuStyle.textShadow ? '-1px -1px #000, -1px 1px #000, 1px -1px #000, 1px 1px #000' : '',
           opacity: this.danmuStyle.opacity/100,
           fontWeight: this.weightChange(this.danmuStyle.fontWeight),
@@ -392,7 +394,8 @@ export default {
       };
       var newDanmu = {
         fromName: from,
-        msg: text
+        msg: text,
+        col:col ? col : ''
       }
       _this.$emit("newDanmuSend", newDanmu)
       if (this.danmuNumStep > 0) {
