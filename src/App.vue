@@ -5,6 +5,9 @@
         <router-view></router-view>
       </keep-alive>
     </transition>
+    <div class="to-bottom" @click="toBeiAn()">
+      <a href="https://beian.miit.gov.cn/" target="_blank" style="text-decoration: none;">沪ICP备20013368号-1</a>
+    </div>
   </div>
 </template>
 
@@ -14,7 +17,9 @@ export default {
     _isMobile() {
       let flag = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
       return flag;
-    }
+    },
+    toBeiAn(){
+    },
   },
   mounted(){
     this.$route.path
@@ -40,5 +45,35 @@ html,body,#app {
   background-color: #F3F6F8;
   margin: 0px;
   padding: 0px;
+}
+.to-bottom{
+  z-index: 999;
+  position: absolute;
+  bottom: 0px;
+  //background-color: #F3F6F8;
+  font-weight: normal;
+  font-size: small;
+  color: #727272;
+  right: 10px;
+  height: 30px;
+  border-radius: 10px;
+  //width: 100px;
+  /*flex 布局*/
+  display: flex;
+  /*实现垂直居中*/
+  align-items: center;
+  /*实现水平居中*/
+  justify-content: center;
+  text-align: justify;
+}
+.to-bottom:hover{
+  cursor: pointer;
+}
+a {
+  color: inherit; /*继承父元素颜色*/
+  text-decoration: none; /*去除下划线*/
+}
+a:hover {
+  text-decoration: underline; /*鼠标悬停时出现下划线*/
 }
 </style>
