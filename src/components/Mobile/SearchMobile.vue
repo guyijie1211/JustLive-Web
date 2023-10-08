@@ -33,6 +33,7 @@
 
 <script>
 import {getSearch} from "@/api/liveList";
+import Global from "@/components/Global";
 
 export default {
   name: "Search",
@@ -123,18 +124,7 @@ export default {
       }
     },
     getPlatform(platForm){
-      if (platForm == 'bilibili'){
-        return '哔哩哔哩'
-      }
-      if (platForm == 'douyu'){
-        return '斗鱼'
-      }
-      if (platForm == 'huya'){
-        return '虎牙'
-      }
-      if (platForm == 'cc'){
-        return '网易CC'
-      }
+      return Global.getPlatform(platForm)
     },
   },
   mounted() {

@@ -51,6 +51,12 @@ export const getRecommendByPlatform = (platform, page, size) =>
         }
     })
 
+export const getAllSupportPlatforms = () =>
+    request({
+        url: '/api/live/getAllSupportPlatforms',
+        method: 'GET'
+    })
+
 export const getAreas = (platform) =>
     request({
         url: '/api/live/getAreas',

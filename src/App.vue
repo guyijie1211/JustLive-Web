@@ -12,6 +12,9 @@
 </template>
 
 <script>
+import {getAllSupportPlatforms} from "./api/liveList";
+import Global from "@/components/Global";
+
 export default {
   methods:{
     _isMobile() {
@@ -34,6 +37,14 @@ export default {
         this.$router.replace(this.$route.path.replace(/\/mobile/, ""));
       }
     }
+  },
+  beforeMount() {
+    getAllSupportPlatforms()
+        .then(response => {
+          if (response.data.code === 200){
+            Global.setPlatformList(response.data.data.platformList)
+          }
+        })
   }
 }
 </script>

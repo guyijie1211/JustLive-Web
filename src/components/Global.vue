@@ -1,4 +1,6 @@
 <script>
+var platformList = []
+
 const textEncoder = new TextEncoder('utf-8');
 const textDecoder = new TextDecoder('utf-8');
 const pako = require('pako')
@@ -594,6 +596,25 @@ const _on_mes = function(data) {
   }
 }
 
+const setPlatformList = function(platformList){
+  this.platformList = platformList
+}
+
+const getPlatform = function(platForm){
+  let name = "";
+  this.platformList.forEach(platformInfo => {
+    if (platformInfo.code === platForm) {
+      name = platformInfo.name
+      return
+    }
+  })
+  return name
+}
+
+const getPlatformList = function(){
+  return this.platformList
+}
+
 
 export default {
   encode,
@@ -606,6 +627,10 @@ export default {
   _bind_ws_info,
   eGameEncode,
   eGameDecode,
-  eGameHeart
+  eGameHeart,
+  getPlatform,
+  setPlatformList,
+  getPlatformList,
+  platformList
 }
 </script>

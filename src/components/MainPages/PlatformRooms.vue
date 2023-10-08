@@ -1,7 +1,7 @@
 <template>
  <div v-loading="loading" element-loading-background="rgba(243, 246, 248, 0.8)" class="platform-room-container">
    <div class="platform-room-name">
-     {{ getPlatform(platform) }}
+     {{ platformName }}
    </div>
    <div class="area-types">
      <div class="area-type-name">
@@ -29,6 +29,7 @@
 <script>
 import RoomList from "@/components/Common/RoomList";
 import {getAreas, getRecommendByPlatform, getRecommendByPlatformArea} from "@/api/liveList";
+import Global from "@/components/Global";
 export default {
   name: "PlatformRooms",
   components: {RoomList},
@@ -36,6 +37,7 @@ export default {
     return {
       page: 1,
       platform: null,
+      platformName: null,
       roomList: [],
       loading: false,
       areaList: [],
@@ -48,6 +50,7 @@ export default {
       selectedDiv.style.color = '#007ACC'
       selectedDiv.style.transform = 'scale(1.1)'
       this.platform = this.$route.params.platform
+      this.platformName = this.$route.params.platformName
       this.loading = true
       getAreas(this.platform)
         .then(response => {
@@ -93,21 +96,7 @@ export default {
       }
     },
     getPlatform(platForm){
-      if (platForm == 'bilibili'){
-        return '哔哩哔哩'
-      }
-      if (platForm == 'douyu'){
-        return '斗鱼'
-      }
-      if (platForm == 'huya'){
-        return '虎牙'
-      }
-      if (platForm == 'cc'){
-        return '网易CC'
-      }
-      if (platForm == 'egame'){
-        return '企鹅电竞'
-      }
+      return Global.getPlatform(platForm)
     },
     selectArea(areaInfo){
       this.page = 1

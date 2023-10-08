@@ -218,9 +218,11 @@ import md5 from 'js-md5';
 import Login from "@/components/Login/Login";
 import BindMail from "@/components/Login/BindMail"
 import {changePassword, changeUserInfo, userApi} from "@/api/UserApi";
+import Global from "@/components/Global";
 
 import {outputError} from "@/utils/exception";
 import {getRoomsOn} from "@/api/liveList";
+import {getAllSupportPlatforms} from "../api/liveList";
 
 export default {
   name: 'Index',
@@ -299,21 +301,7 @@ export default {
       this.$router.push({ name: 'liveRoom', query:{ platform : platform, roomId : roomId } });
     },
     getPlatform(platForm){
-      if (platForm == 'bilibili'){
-        return '哔哩哔哩'
-      }
-      if (platForm == 'douyu'){
-        return '斗鱼'
-      }
-      if (platForm == 'huya'){
-        return '虎牙'
-      }
-      if (platForm == 'cc'){
-        return '网易CC'
-      }
-      if (platForm == 'egame'){
-        return '企鹅电竞'
-      }
+      return Global.getPlatform(platForm)
     },
     doLogin(userName, password) {
       let _this = this
@@ -565,7 +553,8 @@ export default {
       }
       localStorage.setItem('localBanInfo', JSON.stringify(banObj));
     }
-  }
+
+  },
 }
 </script>
 
