@@ -20,6 +20,16 @@ export const getRealUrl = (platform, roomId) =>
         }
     })
 
+export const getRealUrlMultiSource = (platform, roomId) =>
+    request({
+        url: '/api/live/getRealUrlMultiSource',
+        method: 'GET',
+        params: {
+            platform: platform,
+            roomId: roomId,
+        }
+    })
+
 export const getRoomInfo = (uid, platform, roomId) =>
     request({
         url: '/api/live/getRoomInfo',
