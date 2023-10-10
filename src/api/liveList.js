@@ -20,6 +20,15 @@ export const getRealUrl = (platform, roomId) =>
         }
     })
 
+export const getHuyaInfo = (roomId) =>
+    request({
+        url: '/api/live/getHuyaInfo',
+        method: 'GET',
+        params: {
+            roomId: roomId,
+        }
+    })
+
 export const getRealUrlMultiSource = (platform, roomId) =>
     request({
         url: '/api/live/getRealUrlMultiSource',

@@ -9,7 +9,7 @@ import Hls from 'hls.js';
 import flvjs from 'flv.js';
 import Artplayer from 'artplayer';
 import Global from "@/components/Global";
-import {getRealUrlMultiSource} from "@/api/liveList";
+import {getHuyaInfo, getRealUrlMultiSource} from "@/api/liveList";
 import artplayerPluginDanmuku from 'artplayer-plugin-danmuku'
 
 export default {
@@ -313,38 +313,40 @@ export default {
         }
       };
     },
-    initHuyaWs(art) {
-      const ws = new WebSocket('wss://cdnws.api.huya.com/');
-      let roomId = this.roomId
-      let _this = this
-      this.ws = ws
-      ws.onopen = function () {
-        let inRoomMsg = Global._bind_ws_info(_this.huyaAyyuid);
-        let loginMsg = Global.huyaSendPingReq();
-        ws.send(inRoomMsg);
-        ws.send(loginMsg);
-      };
-      this.interval = setInterval(function () {
-        let heartBeatMsg = Global.huyaSendPingReq()
-        ws.send(heartBeatMsg);
-      }, 30 * 1000);
+    initHuyaWs(art){
+      getHuyaInfo(this.roomId)
+          .then(response => {
+            let data = response.data.data
+            console.log(data)
+            console.log(data.luid)
+            const ws = new WebSocket('wss://cdnws.api.huya.com/');
+            let roomId = this.roomId
+            let _this = this
+            this.ws = ws
+            ws.onopen = function () {
+              let inRoomMsg = Global._bind_ws_info(data.luid);
+              let loginMsg = Global.huyaSendPingReq();
+              ws.send(inRoomMsg);
+              ws.send(loginMsg);
+            };
+            this.interval = setInterval(function () {
+              let heartBeatMsg = Global.huyaSendPingReq()
+              ws.send(heartBeatMsg);
+            }, 30 * 1000);
 
-      ws.onmessage = async function (msg) {
-        var reader = new FileReader();
-        reader.readAsArrayBuffer(msg.data)
-        reader.onload = function () {
-          let msg_obj = Global._on_mes(this.result)
-          if (msg_obj.type == "chat") {
-            _this.emitDanmu(msg_obj.content, msg_obj.name);
-            art.plugins.artplayerPluginDanmuku.emit({
-              text: msg_obj.content, // 弹幕文本
-              color: '#fff', // 弹幕局部颜色
-              border: false, // 是否显示描边
-              mode: 0, // 弹幕模式: 0表示滚动, 1静止
-            });
-          }
-        }
-      }
+            ws.onmessage = async function (msg) {
+              var reader = new FileReader();
+              reader.readAsArrayBuffer(msg.data)
+              reader.onload = function () {
+                let msg_obj = Global._on_mes(this.result)
+                if (msg_obj.type == "chat") {
+                  if (_this.isBanned("999", msg_obj.content)) {
+                    _this.emitDanmu(msg_obj.content, msg_obj.name);
+                  }
+                }
+              }
+            }
+          })
     },
     emitDanmu(text, from) {
       let _this = this;
