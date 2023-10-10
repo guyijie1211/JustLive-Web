@@ -7,7 +7,7 @@ import Hls from 'hls.js';
 import flvjs from 'flv.js';
 import Artplayer from 'artplayer';
 import Global from "@/components/Global";
-import {getRealUrl} from "@/api/liveList";
+import {getRealUrlMultiSource} from "@/api/liveList";
 import Danmaku from 'danmaku';
 
 export default {
@@ -18,26 +18,30 @@ export default {
   data() {
     return {
       player: null,
-      quality: [],
+      playUrl: '',
       ws: null,
       huyaAyyuid: '',
       eGameToken: '',
-      videoType: null,
       hls: null,
       flv: null,
       danmaku: null,
       danmuShow: true,
       danmuNumStep: 0,
+      rateSourceSelector: [],
+      rateSelector: [],
+      selectSource: '',
+      selectRate:'',
+      sourceAndRateMap: new Map()
     }
   },
   methods: {
     init(){
       let _this = this
       if (this.isLive){
-       getRealUrl(this.platform, this.roomId)
+       getRealUrlMultiSource(this.platform, this.roomId)
            .then(response => {
              let data = response.data.data
-             let qualityTemp = []
+             let qualityMap = new Map()
              // eslint-disable-next-line no-prototype-builtins
              if (data.hasOwnProperty("token")) {
                this.eGameToken = data.token
@@ -46,56 +50,73 @@ export default {
              if (data.hasOwnProperty("ayyuid")) {
                this.huyaAyyuid = data.ayyuid
              }
-             // eslint-disable-next-line no-prototype-builtins
-             if (data.hasOwnProperty("FD")) {
-               let FD = {
-                 html: "流畅",
-                 url: data.FD,
+             for (let key in data) {
+               // eslint-disable-next-line no-prototype-builtins
+               if (data.hasOwnProperty(key)) {
+                 qualityMap.set(key, data[key])
                }
-               qualityTemp.push(FD)
              }
-             // eslint-disable-next-line no-prototype-builtins
-             if (data.hasOwnProperty("LD")) {
-               let LD = {
-                 html: "清晰",
-                 url: data.LD,
-               }
-               qualityTemp.push(LD)
+
+             let lastSelectSource = localStorage.getItem(`urlSource${this.platform}`)
+             let lastSelectRate = localStorage.getItem(`urlRate${this.platform}`)
+             console.log(`urlSource: ${lastSelectSource}, urlRate: ${lastSelectRate}`);
+
+             // 设置当前选中的线路(需要根据上次选中的线路判断)
+             if (lastSelectSource != null && qualityMap.has(lastSelectSource)) {
+               _this.selectSource = lastSelectSource
+             } else {
+               _this.selectSource = qualityMap.keys().next().value
              }
-             // eslint-disable-next-line no-prototype-builtins
-             if (data.hasOwnProperty("SD")) {
-               let SD = {
-                 html: "高清",
-                 url: data.SD,
-               }
-               qualityTemp.push(SD)
+
+             // 设置当前选中的清晰度(需要根据上次选中的判断)
+             let lastSelectQualityList = qualityMap.get(_this.selectSource)
+             if (lastSelectRate != null) {
+               lastSelectQualityList.forEach(quality => {
+                 if (quality.qualityName === lastSelectRate) {
+                   _this.selectRate = lastSelectRate
+                 }
+               })
              }
-             // eslint-disable-next-line no-prototype-builtins
-             if (data.hasOwnProperty("HD")) {
-               let HD = {
-                 html: "超清",
-                 url: data.HD,
-               }
-               qualityTemp.push(HD)
+             if (_this.selectRate === '') {
+               _this.selectRate = lastSelectQualityList[0].qualityName
              }
-             // eslint-disable-next-line no-prototype-builtins
-             if (data.hasOwnProperty("OD")) {
-               let OD = {
-                 default: true,
-                 html: "原画",
-                 url: data.OD,
-               }
-               qualityTemp.push(OD)
-             }
-             this.quality = qualityTemp
-             _this.videoType = this.quality[this.quality.length-1].url.indexOf("m3u8") > 0 ? 'customHls' : 'flv';
+
+             qualityMap.forEach(function(qualityList, sourceName, map) {
+               // 渲染线路
+               let isSelectSource = _this.selectSource === sourceName
+               _this.rateSourceSelector.push({
+                 default: isSelectSource,
+                 html: sourceName,
+               })
+
+               // 处理清晰度
+               qualityList.forEach(quality => {
+                 let rateName = quality.qualityName
+                 if (rateName.includes('PRO')) {
+                   return
+                 }
+                 let isSelectRate = _this.selectRate === rateName
+                 _this.sourceAndRateMap.set(`${sourceName}===${rateName}`, quality.playUrl)
+                 // 渲染清晰度
+                 if (isSelectSource) {
+                   _this.rateSelector.push({
+                     default: isSelectRate,
+                     html: rateName,
+                   })
+                   if (isSelectRate) {
+                     _this.playUrl = quality.playUrl
+                   }
+                 }
+               })
+             });
+
              var art = new Artplayer({
                container: '.artplayer-app',
                autoplay: true, //自动播放
                isLive: true, //直播
-               url: this.quality[this.quality.length-1].url,
+               url: _this.playUrl,
                // url: "",
-               type: this.videoType,
+               type: _this.playUrl.indexOf("m3u8") > 0 ? 'customHls' : 'flv',
                autoSize: true, //固定视频比例
                pip: true,  //画中画
                fullscreen: true, //全屏按钮
@@ -107,38 +128,24 @@ export default {
                screenshot: true,//截图
                mutex: false, //假如页面里同时存在多个播放器，是否只能让一个播放器播放
                lang: 'zh-cn',  //
-               quality: this.quality,
+               // quality: this.quality, //不需要这个属性里了，清晰度切换现在手动实现
                airplay: true,
                customType: {
-                 // customHls: function (video, url) {
-                 //   const hls = new Hls();
-                 //   hls.loadSource(url);
-                 //   hls.attachMedia(video);
-                 //   _this.hls = hls
-                 // },
-                 // flv: function (video, url) {
-                 //   const flvPlayer = flvjs.createPlayer({
-                 //     type: 'flv',
-                 //     url: url,
-                 //   });
-                 //   flvPlayer.attachMediaElement(video);
-                 //   flvPlayer.load();
-                 //   _this.flv = flvPlayer
-                 // },
                  customHls: function (video, url, art) {
                    console.log("播放customHls")
                    if (Hls.isSupported()) {
+                     console.log("customHls==isSupported")
                      const hls = new Hls();
                      hls.loadSource(url);
                      hls.attachMedia(video);
                      // optional
                      art.hls = hls;
-                     art.once('url', () => hls.destroy());
                      art.once('destroy', () => hls.destroy());
-                     art.once('switch', () => hls.destroy());
                    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                     console.log("application/vnd.apple.mpegurl")
                      video.src = url;
                    } else {
+                     console.log("Unsupported playback format: m3u8")
                      art.notice.show = 'Unsupported playback format: m3u8';
                    }
                  },
@@ -150,14 +157,10 @@ export default {
                      flv.load();
                      // optional
                      art.flv = flv;
-                     art.on('selector', (item) => {
-                       console.log("切换清晰度")
-                       console.log(item)
-                       // flv.destroy()
-                     });
-                     art.once('destroy', () => flv.destroy());
-                     console.log("destroyFlv")
-                     // art.once('switch', () => flv.destroy());
+                     art.on('destroy', () => {
+                       console.log("destroyFlv")
+                       flv.destroy()
+                     })
                    } else {
                      art.notice.show = 'Unsupported playback format: flv';
                    }
@@ -181,30 +184,27 @@ export default {
                      }
                    },
                  },
+                 {
+                   name: 'rateSource',
+                   position: 'right',
+                   html: _this.selectSource,
+                   selector: _this.rateSourceSelector,
+                   onSelect: function (item, $dom) {
+                     _this.changPlayUrl(item.html, _this.selectRate, _this.player)
+                     return item.html;
+                   },
+                 },
+                 {
+                   name: 'rate',
+                   position: 'right',
+                   html: _this.selectRate,
+                   selector: _this.rateSelector,
+                   onSelect: function (item, $dom) {
+                     _this.changPlayUrl(_this.selectSource, item.html, _this.player)
+                     return item.html;
+                   },
+                 },
                ],
-             });
-
-             // if (_this.videoType == 'customHls') {
-             //   art.on('destroy', function (args) {
-             //     _this.hls.destroy();
-             //   });
-             //   art.on('switch', function (args) {
-             //     _this.hls.destroy();
-             //     art.play = true;
-             //   });
-             // } else if (_this.videoType == 'flv') {
-             //   art.on('destroy', function (args) {
-             //     _this.flv.destroy();
-             //   });
-             //   art.on('switch', function (args) {
-             //     _this.flv.destroy();
-             //     art.play = true;
-             //   });
-             // }
-             art.on('selector', (item) => {
-               console.log("切换清晰度")
-               console.log(item)
-               // flv.destroy()
              });
              art.on('resize', function (args) {
                _this.danmaku.resize();
@@ -412,6 +412,30 @@ export default {
         case 100:
           return "bolder"
       }
+    },
+    changPlayUrl(source, rate, art) {
+      let playUrl = this.sourceAndRateMap.get(`${source}===${rate}`)
+      localStorage.setItem(`urlSource${this.platform}`, source)
+      localStorage.setItem(`urlRate${this.platform}`, rate)
+      console.info(`切换直播源:${source}===${rate}`);
+      // 关闭之前的流
+      switch (art.type) {
+        case 'flv':
+          art.flv.unload()
+          break;
+        case 'customHls':
+          art.hls.stopLoad()
+          break;
+        default:
+          break;
+      }
+      if (playUrl.includes('.flv')) {
+        art.type = 'flv'
+      } else {
+        art.type = 'customHls'
+      }
+      console.log(playUrl)
+      art.switchUrl(playUrl)
     },
   },
   beforeDestroy() {
