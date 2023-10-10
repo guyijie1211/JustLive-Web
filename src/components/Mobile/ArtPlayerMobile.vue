@@ -185,6 +185,9 @@ export default {
                     name: 'rateSource',
                     position: 'right',
                     html: _this.selectSource,
+                    style: {
+                      marginRight: '5px',
+                    },
                     selector: _this.rateSourceSelector,
                     onSelect: function (item, $dom) {
                       _this.changPlayUrl(item.html, _this.selectRate, _this.player)
