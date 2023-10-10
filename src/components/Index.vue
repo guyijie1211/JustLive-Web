@@ -119,7 +119,13 @@
         center>
       <div class="update-info-timeline">
         <el-timeline>
-          <el-timeline-item timestamp="2023/2/18" placement="top" color='#0bbd87'>
+          <el-timeline-item timestamp="2023/10/10" placement="top" color='#0bbd87'>
+            <el-card>
+              <p>+增加抖音直播</p>
+              <p>+直播源多线路</p>
+            </el-card>
+          </el-timeline-item>
+          <el-timeline-item timestamp="2023/2/18" placement="top" >
             <el-card>
               <p>修复搜索(需要登录使用)</p>
             </el-card>
@@ -253,7 +259,7 @@ export default {
       topFollowLoading: true,
       showFollowLoading:false,
       roomListOn: [],
-      mixLiveUpdate: "2023021801",
+      mixLiveUpdate: "2023101001",
       player: null,
       isActive: false,
       searchInput: '',
