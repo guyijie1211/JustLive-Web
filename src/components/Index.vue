@@ -13,7 +13,7 @@
           <el-button class="search-btn" icon="el-icon-search" circle @click="submitKw()" size="small"></el-button>
         </div>
         <div class="top-follow">
-          <el-dropdown v-if="isLogin == 'true'" trigger="click" placement="bottom-end" @visible-change = "refreshRoomList()">
+          <el-dropdown v-if="isLogin == 'true'" trigger="click" placement="bottom-end" @visible-change = "refreshRoomList">
             <div>关注列表</div>
             <el-dropdown-menu class="top-follow-menu" slot="dropdown">
               <el-dropdown-item v-if="showFollowLoading" v-loading="topFollowLoading" style="height: 80px;"></el-dropdown-item>
@@ -368,7 +368,10 @@ export default {
         this.$router.push({ name: 'search', query:{ keyWord : searchInput } })
       }
     },
-    refreshRoomList(){
+    refreshRoomList(e) {
+      if(e !== true) {
+        return
+      }
       this.roomListOn = []
       this.initRoomList(this.userInfo.uid)
     },
