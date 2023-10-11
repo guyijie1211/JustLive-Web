@@ -143,6 +143,7 @@ import {getRoomInfo} from "@/api/liveList";
 import {changeUserInfo, follow, unFollow} from "@/api/UserApi";
 import Login from "@/components/Login/Login";
 import ArtPlayerTest from "@/components/Test/ArtPlayerTest";
+import Global from "@/components/Global";
 
 export default {
   name: "Room",
@@ -403,21 +404,7 @@ export default {
       }
     },
     getPlatform(platForm){
-      if (platForm == 'bilibili'){
-        return '哔哩哔哩'
-      }
-      if (platForm == 'douyu'){
-        return '斗鱼'
-      }
-      if (platForm == 'huya'){
-        return '虎牙'
-      }
-      if (platForm == 'cc'){
-        return '网易CC'
-      }
-      if (platForm == 'egame'){
-        return '企鹅电竞'
-      }
+      return Global.getPlatform(platForm)
     },
     isLive(){
       let state = this.roomInfo.isLive

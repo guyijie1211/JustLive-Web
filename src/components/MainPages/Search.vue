@@ -41,36 +41,20 @@
 
 <script>
 import {getSearch} from "@/api/liveList";
+import Global from "@/components/Global";
 
 export default {
   name: "Search",
   data(){
     return {
       keyWord: '',
-      options: [{
-        value: 'all',
-        label: '所有平台'
-      }, {
-        value: 'douyu',
-        label: '斗鱼'
-      }, {
-        value: 'bilibili',
-        label: '哔哩哔哩'
-      }, {
-        value: 'huya',
-        label: '虎牙'
-      }, {
-        value: 'cc',
-        label: '网易CC'
-      }, {
-        value: 'egame',
-        label: '企鹅电竞'
-      }],
-      value: 'all',
+      options: [],
+      value: 'douyu',
       selectType: '0',
       resultList: [],
       loading: false,
       userInfo: {},
+      watchPlatformList: Global.platformList
     }
   },
   methods: {
@@ -81,8 +65,15 @@ export default {
       }
       this.keyWord = this.$route.query.keyWord
       this.toSearch()
-      let li = document.getElementsByClassName("result-li")[0]
-      li.style.color = '#007ACC'
+      // let li = document.getElementsByClassName("result-li")[0]
+      // li.style.color = '#007ACC'
+      var platformList = Global.getPlatformList()
+      platformList.forEach(platformInfo => {
+        this.options.push({
+          value: platformInfo.code,
+          label: platformInfo.name
+        })
+      })
     },
     isLive(isLive){
       if (isLive == "0"){
@@ -131,18 +122,8 @@ export default {
       }
     },
     getPlatform(platForm){
-      if (platForm == 'bilibili'){
-        return '哔哩哔哩'
-      }
-      if (platForm == 'douyu'){
-        return '斗鱼'
-      }
-      if (platForm == 'huya'){
-        return '虎牙'
-      }
-      if (platForm == 'cc'){
-        return '网易CC'
-      }
+      var platformName = Global.getPlatform(platForm)
+      return platformName
     },
   },
   mounted() {
@@ -155,6 +136,17 @@ export default {
   beforeDestroy(){
     this.$emit("exitSearch")
   },
+  watch: {
+    'watchPlatformList'(newVal, oldVal) {
+      var platformList = Global.getPlatformList()
+      platformList.forEach(platformInfo => {
+        this.options.push({
+          value: platformInfo.code,
+          label: platformInfo.name
+        })
+      })
+    }
+  }
 }
 </script>
 

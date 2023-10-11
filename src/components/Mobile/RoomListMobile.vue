@@ -37,6 +37,8 @@
 </template>
 
 <script>
+import Global from "@/components/Global";
+
 export default {
   name: "RoomListMobile",
   props: ['roomList'],
@@ -53,21 +55,7 @@ export default {
       this.$router.push({ name: 'liveRoom', query:{ platform : platform, roomId : roomId } });
     },
     getPlatform(platForm){
-      if (platForm == 'bilibili'){
-        return '哔哩哔哩'
-      }
-      if (platForm == 'douyu'){
-        return '斗鱼'
-      }
-      if (platForm == 'huya'){
-        return '虎牙'
-      }
-      if (platForm == 'cc'){
-        return '网易CC'
-      }
-      if (platForm == 'egame'){
-        return '企鹅电竞'
-      }
+      return Global.getPlatform(platForm)
     },
     getLoad(){
       this.loading = true

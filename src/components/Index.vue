@@ -119,7 +119,13 @@
         center>
       <div class="update-info-timeline">
         <el-timeline>
-          <el-timeline-item timestamp="2023/2/18" placement="top" color='#0bbd87'>
+          <el-timeline-item timestamp="2023/10/10" placement="top" color='#0bbd87'>
+            <el-card>
+              <p>+增加抖音直播</p>
+              <p>+直播源多线路</p>
+            </el-card>
+          </el-timeline-item>
+          <el-timeline-item timestamp="2023/2/18" placement="top" >
             <el-card>
               <p>修复搜索(需要登录使用)</p>
             </el-card>
@@ -218,9 +224,11 @@ import md5 from 'js-md5';
 import Login from "@/components/Login/Login";
 import BindMail from "@/components/Login/BindMail"
 import {changePassword, changeUserInfo, userApi} from "@/api/UserApi";
+import Global from "@/components/Global";
 
 import {outputError} from "@/utils/exception";
 import {getRoomsOn} from "@/api/liveList";
+import {getAllSupportPlatforms} from "../api/liveList";
 
 export default {
   name: 'Index',
@@ -251,7 +259,7 @@ export default {
       topFollowLoading: true,
       showFollowLoading:false,
       roomListOn: [],
-      mixLiveUpdate: "2023021801",
+      mixLiveUpdate: "2023101001",
       player: null,
       isActive: false,
       searchInput: '',
@@ -299,21 +307,7 @@ export default {
       this.$router.push({ name: 'liveRoom', query:{ platform : platform, roomId : roomId } });
     },
     getPlatform(platForm){
-      if (platForm == 'bilibili'){
-        return '哔哩哔哩'
-      }
-      if (platForm == 'douyu'){
-        return '斗鱼'
-      }
-      if (platForm == 'huya'){
-        return '虎牙'
-      }
-      if (platForm == 'cc'){
-        return '网易CC'
-      }
-      if (platForm == 'egame'){
-        return '企鹅电竞'
-      }
+      return Global.getPlatform(platForm)
     },
     doLogin(userName, password) {
       let _this = this
@@ -565,7 +559,8 @@ export default {
       }
       localStorage.setItem('localBanInfo', JSON.stringify(banObj));
     }
-  }
+
+  },
 }
 </script>
 
