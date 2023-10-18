@@ -266,7 +266,7 @@ export default {
   width: 45px;
   background-color: #c10f0f;
   border-radius: 2px;
-  font-size: 5px;
+  font-size: 12px;
   font-weight: 600;
   text-align: center;
   color: #F3F6F8;
@@ -279,7 +279,7 @@ export default {
   width: 45px;
   background-color: #979797;
   border-radius: 2px;
-  font-size: 5px;
+  font-size: 12px;
   font-weight: 600;
   text-align: center;
   color: #F3F6F8;
