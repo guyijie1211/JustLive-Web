@@ -7,7 +7,7 @@
         @change="blankChange">
     </el-switch>
 
-    <el-col class="recommend-room-col" :xs="20" :sm="10" :md="8" :lg="6" :xl="6" v-for="(room, index) in roomList" :key="index">
+    <el-col class="recommend-room-col" :xs="20" :sm="10" :md="8" :lg="6" :xl="6" v-for="(room, index) in realRoomList" :key="index">
         <router-link :to="{path:'/index/liveRoom',query:{ platform : room.platForm, roomId : room.roomId }}" :target="openBlank()">
           <el-card  shadow="hover" class="recommend-room-card">
             <div class="recommend-room-pic">
@@ -100,7 +100,13 @@ export default {
     //   _this.colNum = width/250;
     //   console.log(this.colNum);
     // };
-  },
+  },computed: {
+    realRoomList() {
+      return this.roomList.filter(item => {
+        return Object.values(item).some(i => !!i)
+      })
+    }
+  }
 }
 </script>
 
