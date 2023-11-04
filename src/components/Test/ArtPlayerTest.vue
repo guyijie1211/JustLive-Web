@@ -1,5 +1,5 @@
 <template>
-  <div id="player" class="artplayer-app" ></div>
+  <div id="player" class="artplayer-app" @dblclick="handleDBClick"></div>
 </template>
 
 <script>
@@ -207,6 +207,23 @@ export default {
                      return item.html;
                    },
                  },
+                {
+                  name: 'reload',
+                  tooltip: '重新加载',
+                  position: 'left',
+                  html: '<i class="el-icon-refresh" style="font-size: 22px"></i>',
+                  click: () => {
+                    console.log('重新加载');
+                    // 关闭之前的流
+                    if(art.type === 'flv') {
+                      art.flv.unload()
+                    }
+                    if(art.type === 'customHls') {
+                      art.hls.stopLoad()
+                    }
+                    art.switchUrl(this.playUrl)
+                  }
+                }, 
                ],
              });
              art.on('resize', function (args) {
@@ -326,7 +343,7 @@ export default {
               reader.readAsArrayBuffer(msg.data)
               reader.onload = function () {
                 let msg_obj = Global._on_mes(this.result)
-                if (msg_obj.type == "chat") {
+                if (msg_obj?.type == "chat") {
                   if (_this.isBanned("999", msg_obj.content)) {
                     _this.emitDanmu(msg_obj.content, msg_obj.name);
                   }
@@ -446,6 +463,12 @@ export default {
       console.log(playUrl)
       art.switchUrl(playUrl)
     },
+    /**
+     * 处理播放器的双击事件
+     */
+    handleDBClick() {
+      this.player.fullscreenWeb = !this.player.fullscreenWeb;
+    }
   },
   beforeDestroy() {
     if(this.player){
@@ -491,6 +514,11 @@ export default {
   width: 100%;
   height: 100%;
   /*pointer-events: none;*/
+  -moz-user-select: none;  /*火狐*/
+  -webkit-user-select: none;  /*webkit浏览器*/
+  -ms-user-select: none;  /*IE10*/
+  -khtml-user-select: none;  /*早期浏览器*/
+  user-select: none;
 }
 </style>
 
