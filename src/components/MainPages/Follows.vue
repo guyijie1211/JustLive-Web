@@ -14,6 +14,8 @@
       <li class="follows-li" @click="selectOn">直播中</li>
       <li class="follows-li" @click="selectOff">未开播</li>
       <div class="under-li"></div>
+      <!-- 刷新按钮 -->
+      <i class="el-icon-refresh refresh" @click="refresh"></i>
     </ul>
     <div v-loading="loading" element-loading-background="rgba(243, 246, 248, 0.8)" class="follows-body">
       <RoomList class="follows-room-list" :room-list="roomList"/>
@@ -63,6 +65,29 @@ export default {
           }
           this.loading = false
         })
+    },
+    /** 
+     * 刷新数据,重新获取房间数据
+     */
+    async refresh() {
+      try {
+        this.loading = true
+        const res = await getRoomsOn(this.userInfo.uid)
+        const roomListOn = [];
+        const roomListOff = [];
+
+        res.data.data.forEach(item => {
+          if (item.isLive == 1) {
+            roomListOn.push(item)
+          } else if (item.isLive == 0) {
+            roomListOff.push(item)
+          }
+          this.roomListOn = roomListOn;
+          this.roomListOff = roomListOff;
+        });
+      } finally {
+        this.loading = false
+      }
     },
     selectOn(){
       let underLi = document.getElementsByClassName("under-li")[0]
@@ -169,5 +194,25 @@ export default {
   left: 0;
   top: 100px;
   width: 100%;
+}
+.refresh {
+  cursor: pointer;
+  border-radius: 50%;
+  background-color: #fff;
+  box-shadow: 0 0 0 1px rgba(136, 136, 136, 0.2666666667);
+  transition: all 0.2s ease;
+  padding: 4px;
+  background-image: none !important;
+  font-size: 16px;
+  margin-left: 8px;
+}
+.refresh:hover {
+  box-shadow: 0 0 0 1px #007ACC;
+  transform: rotate(180deg);
+  transition: all 0.5s ease;
+}
+.refresh:active {
+  box-shadow: 0 0 0 1px #007ACC, 0 0 0 3px #007acc47;
+  transition: all 0.3s ease;
 }
 </style>
